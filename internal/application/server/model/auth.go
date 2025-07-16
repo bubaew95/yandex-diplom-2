@@ -1,5 +1,10 @@
 package model
 
+import (
+	"net/mail"
+	"strings"
+)
+
 type User struct {
 	ID        int64  `json:"id,omitempty"`
 	FirstName string `json:"first_name"`
@@ -24,4 +29,35 @@ type AuthResponse struct {
 type LoginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+func (r *RegistrationRequest) Validate() map[string]string {
+	fields := make(map[string]string)
+
+	if r.Email == "" {
+		fields["email"] = "email is required"
+	} else {
+		_, err := mail.ParseAddress(r.Email)
+		if err != nil {
+			fields["email"] = err.Error()
+		}
+	}
+
+	if r.Password == "" {
+		fields["password"] = "password is required"
+	}
+
+	if r.Password != r.RePassword {
+		fields["password"] = "passwords don't match"
+	}
+
+	if strings.TrimSpace(r.LastName) == "" {
+		fields["last_name"] = "last name is required"
+	}
+
+	if strings.TrimSpace(r.FirstName) == "" {
+		fields["first_name"] = "first name is required"
+	}
+
+	return fields
 }

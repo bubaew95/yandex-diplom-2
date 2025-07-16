@@ -8,13 +8,16 @@ import (
 	"github.com/bubaew95/yandex-diplom-2/pkg/crypto"
 	"github.com/bubaew95/yandex-diplom-2/pkg/token"
 	"go.uber.org/zap"
-	"net/http"
 )
 
 type Repository interface {
 	CreateUser(ctx context.Context, r *model.RegistrationRequest) (int64, error)
 	GetUserByEmail(ctx context.Context, email string) (bool, error)
 	FindUserByEmail(ctx context.Context, r *model.LoginRequest) (model.User, error)
+	AddText(ctx context.Context, r *model.TextRequest, userID int64) (int64, error)
+	EditText(ctx context.Context, r *model.TextRequest, userID int64) (int64, error)
+	DeleteText(ctx context.Context, userID int64, ID int64) error
+	AddBinary(ctx context.Context, r *model.BinaryRequest, userID int64) (int64, error)
 }
 
 type Service struct {
@@ -28,7 +31,7 @@ func NewService(repo Repository, cfg config.Config) *Service {
 
 func (s Service) AddUser(ctx context.Context, r *model.RegistrationRequest) (model.RegistrationResponse, error) {
 	if r.Password != r.RePassword {
-		return model.RegistrationResponse{}, model.Error("password does not match", http.StatusInternalServerError)
+		return model.RegistrationResponse{}, model.PasswordNotMatchError
 	}
 
 	hash, err := crypto.EncodeHash(r.Password)
@@ -67,19 +70,62 @@ func (s Service) Login(ctx context.Context, r *model.LoginRequest) (model.AuthRe
 	user, err := s.repo.FindUserByEmail(ctx, r)
 	if err != nil {
 		logger.Log.Debug("login failed", zap.Error(err))
-		return model.AuthResponse{}, model.Error(err.Error(), http.StatusUnauthorized)
+		return model.AuthResponse{}, model.AuthorizationError
 	}
 
 	jwt, err := token.EncodeJWTToken(user)
 	if err != nil {
-		return model.AuthResponse{}, model.Error(err.Error(), http.StatusUnauthorized)
+		return model.AuthResponse{}, model.AuthorizationError
 	}
 
 	if user.Password != r.Password {
-		return model.AuthResponse{}, model.Error("not correct login or password", http.StatusUnauthorized)
+		return model.AuthResponse{}, model.LoginAndPasswordError
 	}
 
 	return model.AuthResponse{
 		Token: jwt,
+	}, nil
+}
+
+func (s Service) AddText(ctx context.Context, r *model.TextRequest) (model.TextResponse, error) {
+	user := ctx.Value("user").(model.User)
+	dataID, err := s.repo.AddText(ctx, r, user.ID)
+	if err != nil {
+		return model.TextResponse{}, err
+	}
+
+	return model.TextResponse{
+		ID:     dataID,
+		Text:   r.Text,
+		UserID: user.ID,
+	}, nil
+}
+
+func (s Service) EditText(ctx context.Context, r *model.TextRequest) (model.TextResponse, error) {
+	user := ctx.Value("user").(model.User)
+
+	_, err := s.repo.EditText(ctx, r, user.ID)
+	if err != nil {
+		return model.TextResponse{}, err
+	}
+
+	return model.TextResponse{
+		ID:     r.ID,
+		Text:   r.Text,
+		UserID: user.ID,
+	}, nil
+}
+
+func (s Service) DeleteText(ctx context.Context, ID int64) error {
+	user := ctx.Value("user").(model.User)
+
+	return s.repo.DeleteText(ctx, user.ID, ID)
+}
+
+func (s Service) AddBinary(ctx context.Context, r *model.BinaryRequest) (model.BinaryResponse, error) {
+	user := ctx.Value("user").(model.User)
+
+	return model.BinaryResponse{
+		UserID: user.ID,
 	}, nil
 }

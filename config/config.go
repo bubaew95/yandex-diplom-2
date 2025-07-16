@@ -12,22 +12,28 @@ type token struct {
 }
 
 type Config struct {
-	Address     string `json:"address"`
-	EnableHTTPS bool   `json:"enable_https"`
-	EnableGRPC  bool   `json:"enable_grpc"`
-	DSN         string `json:"dsn"`
-	Token       token
+	Port          string `json:"port"`
+	ServerAddress string `json:"server_address"`
+	EnableHTTPS   bool   `json:"enable_https"`
+	EnableGRPC    bool   `json:"enable_grpc"`
+	DSN           string `json:"dsn"`
+	Token         token
 }
 
 func NewConfig() Config {
-	address := flag.String("a", "", "address to listen on")
+	port := flag.String("p", "", "port to listen on")
+	serverAddress := flag.String("a", "", "serverAddress to listen on")
 	enableHTTPS := flag.Bool("enable-https", false, "enable https")
 	enableGRPC := flag.Bool("enable-grpc", false, "enable grpc")
 	dsn := flag.String("d", "", "dsn to connect to")
 	flag.Parse()
 
 	if envAddress := os.Getenv("ADDRESS"); envAddress != "" {
-		*address = envAddress
+		*port = envAddress
+	}
+
+	if envServerAddress := os.Getenv("DOMAIN"); envServerAddress != "" {
+		*serverAddress = envServerAddress
 	}
 
 	if envEnableHTTPS := os.Getenv("ENABLE_HTTPS"); envEnableHTTPS != "" {
@@ -43,9 +49,10 @@ func NewConfig() Config {
 	}
 
 	return Config{
-		Address:     *address,
-		EnableHTTPS: *enableHTTPS,
-		EnableGRPC:  *enableGRPC,
-		DSN:         *dsn,
+		Port:          *port,
+		EnableHTTPS:   *enableHTTPS,
+		EnableGRPC:    *enableGRPC,
+		DSN:           *dsn,
+		ServerAddress: *serverAddress,
 	}
 }

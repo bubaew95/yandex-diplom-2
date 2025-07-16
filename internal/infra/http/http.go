@@ -8,6 +8,7 @@ import (
 	"github.com/bubaew95/yandex-diplom-2/internal/logger"
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/zap"
+	"golang.org/x/crypto/acme/autocert"
 	"net/http"
 	"time"
 )
@@ -25,7 +26,7 @@ type httpServer struct {
 func NewServer(r *chi.Mux, cfg config.Config) HTTPServer {
 	return &httpServer{
 		server: &http.Server{
-			Addr:    cfg.Address,
+			Addr:    cfg.Port,
 			Handler: r,
 		},
 		config: cfg,
@@ -33,19 +34,40 @@ func NewServer(r *chi.Mux, cfg config.Config) HTTPServer {
 }
 
 func (s *httpServer) Start() {
-	logger.Log.Info("Starting http server", zap.String("address", s.config.Address))
+	logger.Log.Info("Starting http server", zap.String("address", s.config.Port))
 	chError := make(chan string)
 
+	if s.config.EnableHTTPS {
+		chError = s.startTsl(chError)
+	} else {
+		chError = s.startHttp(chError)
+	}
+
+	select {
+	case result := <-chError:
+		logger.Log.Fatal(result)
+	}
+}
+
+func (s *httpServer) startHttp(chError chan string) chan string {
 	go func() {
 		if err := s.server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			chError <- fmt.Sprintf("Failed to start http server: %s", err)
 		}
 	}()
 
-	select {
-	case result := <-chError:
-		logger.Log.Fatal(result)
-	}
+	return chError
+}
+
+func (s *httpServer) startTsl(chError chan string) chan string {
+	logger.Log.Info("Running https server", zap.String("port", s.config.ServerAddress))
+	go func() {
+		if err := s.server.Serve(autocert.NewListener(s.config.ServerAddress)); err != nil {
+			chError <- fmt.Sprintf("Failed to start https(tsl) server: %s", err)
+		}
+	}()
+
+	return chError
 }
 
 func (s *httpServer) Stop() {
