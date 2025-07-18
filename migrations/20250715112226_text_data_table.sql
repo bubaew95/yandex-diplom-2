@@ -1,0 +1,13 @@
+-- +goose Up
+CREATE TABLE text_data(
+    id SERIAL primary key,
+    user_id INTEGER DEFAULT NULL,
+    text TEXT DEFAULT NULL,
+    uploaded_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+ALTER TABLE text_data ADD CONSTRAINT FK_USER_TEXT_DATA FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+CREATE INDEX IDX_USER_TEXT_DATA ON text_data (user_Id);
+
+-- +goose Down
+ALTER TABLE text_data DROP CONSTRAINT FK_USER_TEXT_DATA;
+DROP TABLE text_data;

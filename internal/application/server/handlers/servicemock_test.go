@@ -14,6 +14,62 @@ type MockService struct {
 	mock.Mock
 }
 
+// AddBinary provides a mock function with given fields: ctx, r
+func (_m *MockService) AddBinary(ctx context.Context, r *model.BinaryRequest) (model.BinaryResponse, error) {
+	ret := _m.Called(ctx, r)
+
+	if len(ret) == 0 {
+		panic("no return value specified for AddBinary")
+	}
+
+	var r0 model.BinaryResponse
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, *model.BinaryRequest) (model.BinaryResponse, error)); ok {
+		return rf(ctx, r)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, *model.BinaryRequest) model.BinaryResponse); ok {
+		r0 = rf(ctx, r)
+	} else {
+		r0 = ret.Get(0).(model.BinaryResponse)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, *model.BinaryRequest) error); ok {
+		r1 = rf(ctx, r)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// AddText provides a mock function with given fields: ctx, r
+func (_m *MockService) AddText(ctx context.Context, r *model.TextRequest) (model.TextResponse, error) {
+	ret := _m.Called(ctx, r)
+
+	if len(ret) == 0 {
+		panic("no return value specified for AddText")
+	}
+
+	var r0 model.TextResponse
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, *model.TextRequest) (model.TextResponse, error)); ok {
+		return rf(ctx, r)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, *model.TextRequest) model.TextResponse); ok {
+		r0 = rf(ctx, r)
+	} else {
+		r0 = ret.Get(0).(model.TextResponse)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, *model.TextRequest) error); ok {
+		r1 = rf(ctx, r)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // AddUser provides a mock function with given fields: ctx, r
 func (_m *MockService) AddUser(ctx context.Context, r *model.RegistrationRequest) (model.RegistrationResponse, error) {
 	ret := _m.Called(ctx, r)
@@ -34,6 +90,52 @@ func (_m *MockService) AddUser(ctx context.Context, r *model.RegistrationRequest
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, *model.RegistrationRequest) error); ok {
+		r1 = rf(ctx, r)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// DeleteText provides a mock function with given fields: ctx, ID
+func (_m *MockService) DeleteText(ctx context.Context, ID int64) error {
+	ret := _m.Called(ctx, ID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeleteText")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, int64) error); ok {
+		r0 = rf(ctx, ID)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// EditText provides a mock function with given fields: ctx, r
+func (_m *MockService) EditText(ctx context.Context, r *model.TextRequest) (model.TextResponse, error) {
+	ret := _m.Called(ctx, r)
+
+	if len(ret) == 0 {
+		panic("no return value specified for EditText")
+	}
+
+	var r0 model.TextResponse
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, *model.TextRequest) (model.TextResponse, error)); ok {
+		return rf(ctx, r)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, *model.TextRequest) model.TextResponse); ok {
+		r0 = rf(ctx, r)
+	} else {
+		r0 = ret.Get(0).(model.TextResponse)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, *model.TextRequest) error); ok {
 		r1 = rf(ctx, r)
 	} else {
 		r1 = ret.Error(1)

@@ -45,12 +45,20 @@ func main() {
 	srv := service.NewService(repo, cfg)
 	handler := handlers.NewHandler(srv, &cfg)
 
+	route.Use(middleware.GZipMiddleware)
 	route.Route("/api/v1", func(r chi.Router) {
 		r.Post("/login", handler.Login)
 		r.Post("/register", handler.Register)
 
 		r.Group(func(r chi.Router) {
 			r.Use(middleware.AuthMiddleware())
+
+			r.Route("/text", func(r chi.Router) {
+				r.Post("/", handler.AddText)
+				r.Put("/{id}", handler.EditText)
+				r.Delete("/{id}", handler.DeleteText)
+			})
+
 			r.Get("/sync", handler.Sync)
 		})
 	})

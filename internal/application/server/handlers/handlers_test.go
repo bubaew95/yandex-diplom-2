@@ -59,11 +59,7 @@ func TestHandler_Register(t *testing.T) {
 			},
 			response: response{
 				data: model.RegistrationResponse{},
-				err: model.ErrorResponse{
-					Errors: map[string]string{
-						"message": "user with this email already exists",
-					},
-				},
+				err:  model.Error("user with this email already exists", http.StatusInternalServerError),
 			},
 		},
 		{
@@ -74,11 +70,7 @@ func TestHandler_Register(t *testing.T) {
 			},
 			response: response{
 				data: model.RegistrationResponse{},
-				err: model.ErrorResponse{
-					Errors: map[string]string{
-						"message": "password does not match",
-					},
-				},
+				err:  model.Error("password does not match", http.StatusInternalServerError),
 			},
 		},
 	}
