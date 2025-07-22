@@ -5,26 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9657d789-eb0f-418c-8065-f71d658d821b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/internal/application/server/handlers/grpc/server.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/application/server/model/card.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/proto/generate.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/proto/gokeeper.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/client/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/client/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/server/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/server/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/application/server/handlers/handlers.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/application/server/handlers/http/handlers.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/application/server/handlers/handlers_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/application/server/handlers/http/handlers_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/application/server/handlers/middleware/authorization.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/application/server/handlers/http/middleware/authorization.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/application/server/handlers/middleware/gzip.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/application/server/handlers/http/middleware/gzip.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/application/server/handlers/servicemock_test.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/application/server/repository/postgres.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/application/server/repository/postgres.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/application/server/service/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/application/server/service/service.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/infra/http/http.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/infra/http/http.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/migrations/20250715112226_text_data_table.sql" beforeDir="false" afterPath="$PROJECT_DIR$/migrations/20250715112226_text_data_table.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/migrations/20250716091137_string_data_field.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/crypto/crypto.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/crypto/crypto.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,7 +47,7 @@
     "RunOnceActivity.go.formatter.settings.were.checked": "true",
     "RunOnceActivity.go.migrated.go.modules.settings": "true",
     "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
-    "git-widget-placeholder": "dev",
+    "git-widget-placeholder": "master",
     "go.import.settings.migrated": "true",
     "go.sdk.automatically.set": "true",
     "last_opened_file_path": "/Users/noxcho/Server/GO/yandex/diplom-2/internal",
