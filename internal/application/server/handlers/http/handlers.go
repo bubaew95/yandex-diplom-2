@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/bubaew95/yandex-diplom-2/config"
 	"github.com/bubaew95/yandex-diplom-2/internal/application/server/model"
 	"github.com/bubaew95/yandex-diplom-2/pkg/response"
@@ -16,9 +15,15 @@ import (
 type Service interface {
 	AddUser(ctx context.Context, r *model.RegistrationRequest) (model.RegistrationResponse, error)
 	Login(ctx context.Context, r *model.LoginRequest) (model.AuthResponse, error)
+
 	AddText(ctx context.Context, r *model.TextRequest) (model.TextResponse, error)
 	EditText(ctx context.Context, r *model.TextRequest) (model.TextResponse, error)
 	DeleteText(ctx context.Context, ID int64) error
+
+	AddCard(ctx context.Context, r *model.CardRequest) (model.CardResponse, error)
+	EditCard(ctx context.Context, r *model.CardRequest) (model.CardResponse, error)
+	DeleteCard(ctx context.Context, ID int64) error
+
 	AddBinary(ctx context.Context, r *model.BinaryRequest) (model.BinaryResponse, error)
 }
 
@@ -53,7 +58,6 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 
 	response.WriteResponse(w, http.StatusOK, user)
 }
-
 func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	var registerRequest model.RegistrationRequest
 	if err := json.NewDecoder(r.Body).Decode(&registerRequest); err != nil {
@@ -75,11 +79,6 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	response.WriteResponse(w, http.StatusCreated, user)
 }
 
-func (h *Handler) Sync(w http.ResponseWriter, r *http.Request) {
-	user := r.Context().Value("user")
-	fmt.Println(user)
-}
-
 func (h *Handler) AddText(w http.ResponseWriter, r *http.Request) {
 	var textRequest model.TextRequest
 	if err := json.NewDecoder(r.Body).Decode(&textRequest); err != nil {
@@ -95,7 +94,6 @@ func (h *Handler) AddText(w http.ResponseWriter, r *http.Request) {
 
 	response.WriteResponse(w, http.StatusOK, text)
 }
-
 func (h *Handler) EditText(w http.ResponseWriter, r *http.Request) {
 	var textRequest model.TextRequest
 	if err := json.NewDecoder(r.Body).Decode(&textRequest); err != nil {
@@ -118,8 +116,59 @@ func (h *Handler) EditText(w http.ResponseWriter, r *http.Request) {
 
 	response.WriteResponse(w, http.StatusOK, text)
 }
-
 func (h *Handler) DeleteText(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		response.WriteErrors(w, err)
+		return
+	}
+
+	if err := h.service.DeleteText(r.Context(), id); err != nil {
+		response.WriteErrors(w, err)
+		return
+	}
+
+	response.WriteResponse(w, http.StatusNoContent, nil)
+}
+
+func (h *Handler) AddCard(w http.ResponseWriter, r *http.Request) {
+	var textRequest model.TextRequest
+	if err := json.NewDecoder(r.Body).Decode(&textRequest); err != nil {
+		response.WriteErrors(w, err)
+		return
+	}
+
+	text, err := h.service.AddText(r.Context(), &textRequest)
+	if err != nil {
+		response.WriteErrors(w, err)
+		return
+	}
+
+	response.WriteResponse(w, http.StatusOK, text)
+}
+func (h *Handler) EditCard(w http.ResponseWriter, r *http.Request) {
+	var textRequest model.TextRequest
+	if err := json.NewDecoder(r.Body).Decode(&textRequest); err != nil {
+		response.WriteErrors(w, err)
+		return
+	}
+
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		response.WriteErrors(w, err)
+		return
+	}
+
+	textRequest.ID = id
+	text, err := h.service.EditText(r.Context(), &textRequest)
+	if err != nil {
+		response.WriteErrors(w, err)
+		return
+	}
+
+	response.WriteResponse(w, http.StatusOK, text)
+}
+func (h *Handler) DeleteCard(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		response.WriteErrors(w, err)

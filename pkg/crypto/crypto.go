@@ -10,8 +10,8 @@ import (
 
 type ctxKey string
 
-// KeyUserID — ключ, используемый для хранения/извлечения ID пользователя из контекста.
-const KeyUserID ctxKey = "user_id"
+// KeyUser — ключ, используемый для хранения/извлечения ID пользователя из контекста.
+const KeyUser ctxKey = "user"
 
 var (
 	secretKey = "x3sdgsdg#$D_13@!5k9f"

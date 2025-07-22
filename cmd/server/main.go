@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/bubaew95/yandex-diplom-2/config"
-	"github.com/bubaew95/yandex-diplom-2/internal/application/server/handlers"
-	"github.com/bubaew95/yandex-diplom-2/internal/application/server/handlers/middleware"
+	"github.com/bubaew95/yandex-diplom-2/internal/application/server/handlers/http"
+	"github.com/bubaew95/yandex-diplom-2/internal/application/server/handlers/http/middleware"
 	"github.com/bubaew95/yandex-diplom-2/internal/application/server/repository"
 	service "github.com/bubaew95/yandex-diplom-2/internal/application/server/service"
 	infra "github.com/bubaew95/yandex-diplom-2/internal/infra/database"
@@ -37,11 +37,7 @@ func main() {
 		logger.Log.Fatal("Failed to initialize database", zap.Error(err))
 	}
 
-	repo, err := repository.NewRepository(db)
-	if err != nil {
-		logger.Log.Fatal("Repository init failed", zap.Error(err))
-	}
-
+	repo := repository.NewRepository(db)
 	srv := service.NewService(repo, cfg)
 	handler := handlers.NewHandler(srv, &cfg)
 
@@ -59,16 +55,21 @@ func main() {
 				r.Delete("/{id}", handler.DeleteText)
 			})
 
-			r.Get("/sync", handler.Sync)
+			r.Route("/cards", func(r chi.Router) {
+				r.Post("/", handler.AddCard)
+				r.Put("/{id}", handler.EditCard)
+				r.Delete("/{id}", handler.DeleteCard)
+			})
 		})
 	})
 
-	server := httpServer.NewServer(route, cfg)
+	server := httpServer.NewServer(route, repo, cfg)
 	server.Start()
 
 	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, os.Interrupt, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
 	<-ch
 
+	logger.Log.Info("Shutting down server")
 	server.Stop()
 }

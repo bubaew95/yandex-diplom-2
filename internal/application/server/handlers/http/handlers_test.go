@@ -66,7 +66,7 @@ func TestHandler_Register(t *testing.T) {
 			name: "password doesn't match",
 			request: request{
 				data: `{ "first_name": "test", "last_name": "test", "email": "tesd33d14@mail.ru", "password": "12341", "re_password": "1234" }`,
-				code: http.StatusInternalServerError,
+				code: http.StatusUnprocessableEntity,
 			},
 			response: response{
 				data: model.RegistrationResponse{},
@@ -90,7 +90,7 @@ func TestHandler_Register(t *testing.T) {
 			err := json.Unmarshal([]byte(tt.request.data), &registerRequest)
 			require.NoError(t, err)
 
-			mockService.On("AddUser", mock.Anything, &registerRequest).Return(tt.response.data, tt.response.err)
+			mockService.On("AddUser", mock.Anything, &registerRequest).Return(tt.response.data, tt.response.err).Once()
 
 			resp, err := http.Post(ts.URL+"/api/v1/register", "application/json", strings.NewReader(tt.request.data))
 			require.NoError(t, err)

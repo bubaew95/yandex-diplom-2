@@ -15,8 +15,8 @@ type Repository struct {
 	db *infra.DataBase
 }
 
-func NewRepository(db *infra.DataBase) (*Repository, error) {
-	return &Repository{db: db}, nil
+func NewRepository(db *infra.DataBase) *Repository {
+	return &Repository{db: db}
 }
 
 func (s *Repository) CreateUser(ctx context.Context, r *model.RegistrationRequest) (int64, error) {
@@ -38,7 +38,6 @@ func (s *Repository) CreateUser(ctx context.Context, r *model.RegistrationReques
 
 	return id, nil
 }
-
 func (s *Repository) GetUserByEmail(ctx context.Context, email string) (bool, error) {
 	var id int64
 
@@ -55,7 +54,6 @@ func (s *Repository) GetUserByEmail(ctx context.Context, email string) (bool, er
 
 	return true, nil
 }
-
 func (s *Repository) FindUserByEmail(ctx context.Context, r *model.LoginRequest) (model.User, error) {
 	var user model.User
 	sqlQuery := `SELECT id, email, first_name, last_name, password FROM users WHERE email = $1`
@@ -72,6 +70,8 @@ func (s *Repository) FindUserByEmail(ctx context.Context, r *model.LoginRequest)
 	return user, nil
 }
 
+//Text table
+
 func (s *Repository) AddText(ctx context.Context, r *model.TextRequest, userID int64) (int64, error) {
 	sqlQuery := `INSERT INTO text_data (text, user_id) VALUES ($1, $2) RETURNING id`
 	var id int64
@@ -83,7 +83,6 @@ func (s *Repository) AddText(ctx context.Context, r *model.TextRequest, userID i
 
 	return id, nil
 }
-
 func (s *Repository) EditText(ctx context.Context, r *model.TextRequest, userID int64) (int64, error) {
 	data, err := s.GetText(ctx, r.ID)
 	if err != nil {
@@ -105,7 +104,6 @@ func (s *Repository) EditText(ctx context.Context, r *model.TextRequest, userID 
 
 	return r.ID, nil
 }
-
 func (s *Repository) DeleteText(ctx context.Context, userID int64, ID int64) error {
 	textData, err := s.GetText(ctx, ID)
 	if err != nil {
@@ -126,7 +124,6 @@ func (s *Repository) DeleteText(ctx context.Context, userID int64, ID int64) err
 	}
 	return nil
 }
-
 func (s *Repository) GetText(ctx context.Context, ID int64) (model.TextResponse, error) {
 	var text model.TextResponse
 
@@ -138,6 +135,74 @@ func (s *Repository) GetText(ctx context.Context, ID int64) (model.TextResponse,
 
 	return text, nil
 }
+
+//Card table
+
+func (s *Repository) AddCard(ctx context.Context, r *model.CardRequest, userID int64) (int64, error) {
+	sqlQuery := `INSERT INTO text_data (text, user_id) VALUES ($1, $2) RETURNING id`
+	var id int64
+
+	row := s.db.QueryRowContext(ctx, sqlQuery, r.Number, userID)
+	if err := row.Scan(&id); err != nil {
+		return -1, err
+	}
+
+	return id, nil
+}
+func (s *Repository) EditCard(ctx context.Context, r *model.CardRequest, userID int64) (int64, error) {
+	data, err := s.GetCard(ctx, r.ID)
+	if err != nil {
+		return -1, err
+	}
+
+	if userID != data.UserID {
+		return -1, model.AccessDeniedError
+	}
+
+	if data.Text == r.Number {
+		return -1, model.DataNotChangedError
+	}
+
+	_, err = s.db.ExecContext(ctx, `UPDATE text_data SET text = $1 WHERE id = $2`, r.Number, r.ID)
+	if err != nil {
+		return -1, err
+	}
+
+	return r.ID, nil
+}
+func (s *Repository) DeleteCard(ctx context.Context, userID int64, ID int64) error {
+	textData, err := s.GetText(ctx, ID)
+	if err != nil {
+		return err
+	}
+
+	if textData.IsDeleted == true {
+		return model.NotFoundError
+	}
+
+	if textData.UserID != userID {
+		return model.AccessDeniedError
+	}
+
+	_, err = s.db.ExecContext(ctx, `UPDATE text_data SET is_deleted = $1 WHERE id = $2`, true, ID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func (s *Repository) GetCard(ctx context.Context, ID int64) (model.TextResponse, error) {
+	var text model.TextResponse
+
+	sqlQuery := `SELECT id, text, user_id, is_deleted FROM text_data WHERE id = $1`
+	row := s.db.QueryRowContext(ctx, sqlQuery, ID)
+	if err := row.Scan(&text.ID, &text.Text, &text.UserID, &text.IsDeleted); err != nil {
+		return model.TextResponse{}, err
+	}
+
+	return text, nil
+}
+
+//Binary table
 
 func (s *Repository) AddBinary(ctx context.Context, r *model.BinaryRequest, userID int64) (int64, error) {
 	return -1, nil

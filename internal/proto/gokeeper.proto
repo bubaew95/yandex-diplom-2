@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package gokeeper;
+
+option go_package = "github.com/bubaew95/yandex-diplom-2/internal/proto;proto";
+
+service GoKeeper {
+  rpc AddText(TextRequest) returns(TextResponse);
+  rpc EditText(TextEditRequest) returns(TextResponse);
+  rpc DeleteText(IdRequest) returns(SuccessResponse);
+
+  rpc AddCard(CardRequest) returns(CardResponse);
+  rpc EditCard(CardEditRequest) returns(CardResponse);
+  rpc DeleteCard(IdRequest) returns(SuccessResponse);
+}
+
+message TextRequest {
+  string text = 1;
+}
+message TextEditRequest {
+  int64 id = 1;
+  string text = 2;
+}
+message TextResponse {
+  int64 id = 1;
+  string text = 2;
+  int64 user_id = 3;
+  bool is_deleted = 4;
+}
+
+message CardRequest {
+  string number = 1;
+}
+message CardEditRequest {
+  int64 id = 1;
+  string number = 2;
+}
+message CardResponse {
+  int64 id = 1;
+  string number = 2;
+  int64 user_id = 3;
+  bool is_deleted = 4;
+}
+
+message IdRequest {
+  int64 id = 1;
+}
+message SuccessResponse {
+  bool success = 1;
+}
