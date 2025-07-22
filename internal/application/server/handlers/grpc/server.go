@@ -2,14 +2,13 @@ package grpc
 
 import (
 	"context"
+	"fmt"
 	"github.com/bubaew95/yandex-diplom-2/internal/application/server/model"
 	pb "github.com/bubaew95/yandex-diplom-2/internal/proto"
-	"github.com/bubaew95/yandex-diplom-2/pkg/crypto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"net/http"
 )
 
 //go:generate go run github.com/vektra/mockery/v2@v2.52.2 --name=Service --filename=servicemock_test.go --inpackage
@@ -37,7 +36,7 @@ func NewServer(service Service) *Server {
 	return &Server{service: service}
 }
 
-func AuthInterceptor() grpc.UnaryServerInterceptor {
+func LoginInterceptor() grpc.UnaryServerInterceptor {
 	return func(
 		ctx context.Context,
 		req interface{},
@@ -54,16 +53,18 @@ func AuthInterceptor() grpc.UnaryServerInterceptor {
 			token = vals[0]
 		}
 
-		if token == "" || !crypto.IsInvalidUserID(&http.Cookie{Name: "user_id", Value: userID}) {
-			rawID := crypto.GenerateUserID()
-			encodedID, err := crypto.EncodeUserID(rawID)
-			if err != nil {
-				return nil, status.Error(codes.Internal, "user ID encoding failed")
-			}
-			userID = encodedID
-		}
+		fmt.Println(token)
 
-		ctx = context.WithValue(ctx, crypto.KeyUser, userID)
+		//if token == "" || ! {
+		//	rawID := crypto.GenerateUserID()
+		//	encodedID, err := crypto.EncodeUserID(rawID)
+		//	if err != nil {
+		//		return nil, status.Error(codes.Internal, "user ID encoding failed")
+		//	}
+		//	userID = encodedID
+		//}
+		//
+		//ctx = context.WithValue(ctx, crypto.KeyUser, userID)
 		return handler(ctx, req)
 	}
 }
