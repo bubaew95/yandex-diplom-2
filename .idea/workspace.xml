@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="9657d789-eb0f-418c-8065-f71d658d821b" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/internal/application/server/handlers/grpc/server.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/application/server/model/card.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/proto/generate.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/proto/gokeeper.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/client/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/client/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/server/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/server/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/application/server/handlers/handlers.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/application/server/handlers/http/handlers.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/application/server/handlers/handlers_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/application/server/handlers/http/handlers_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/application/server/handlers/middleware/authorization.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/application/server/handlers/http/middleware/authorization.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/application/server/handlers/middleware/gzip.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/application/server/handlers/http/middleware/gzip.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/application/server/handlers/servicemock_test.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/application/server/repository/postgres.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/application/server/repository/postgres.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/application/server/service/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/application/server/service/service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/infra/http/http.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/infra/http/http.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/20250715112226_text_data_table.sql" beforeDir="false" afterPath="$PROJECT_DIR$/migrations/20250715112226_text_data_table.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/20250716091137_string_data_field.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/crypto/crypto.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/crypto/crypto.go" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Go File" />
+      </list>
+    </option>
+  </component>
+  <component name="GOROOT" url="file://$USER_HOME$/go/go1.24.2" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="KubernetesApiPersistence"><![CDATA[{}]]></component>
+  <component name="KubernetesApiProvider"><![CDATA[{
+  "isMigrated": true
+}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
+  <component name="ProjectId" id="2yb5b8C5zv5nER5ilkAypD7JAFU" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultGoTemplateProperty": "Go File",
+    "Go Build.go build github.com/bubaew95/yandex-diplom-2/cmd/server.executor": "Run",
+    "Go Build.start.executor": "Run",
+    "Go Test.go test diplom-2.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.go.formatter.settings.were.checked": "true",
+    "RunOnceActivity.go.migrated.go.modules.settings": "true",
+    "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
+    "git-widget-placeholder": "dev",
+    "go.import.settings.migrated": "true",
+    "go.sdk.automatically.set": "true",
+    "last_opened_file_path": "/Users/noxcho/Server/GO/yandex/diplom-2/internal",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "postgresql"
+    ]
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/internal" />
+      <recent name="$PROJECT_DIR$/internal/application/server/handlers/middleware" />
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/internal/infra/database" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/internal/application/server/handlers/http" />
+      <recent name="$PROJECT_DIR$/pkg/response" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Go Build.start">
+    <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <module name="diplom-2" />
+      <working_directory value="$PROJECT_DIR$" />
+      <go_parameters value="-i" />
+      <kind value="FILE" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="start" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <module name="diplom-2" />
+      <working_directory value="$PROJECT_DIR$" />
+      <parameters value="-d=&quot;host=127.0.0.1 user=admin password=admin dbname=diploma_2 sslmode=disable&quot;" />
+      <kind value="DIRECTORY" />
+      <package value="github.com/bubaew95/yandex-diplom-2" />
+      <directory value="$PROJECT_DIR$/cmd/server" />
+      <filePath value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="GoTestRunConfiguration" factoryName="Go Test">
+      <module name="diplom-2" />
+      <working_directory value="$PROJECT_DIR$" />
+      <go_parameters value="-i" />
+      <kind value="DIRECTORY" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <method v="2" />
+    </configuration>
+    <configuration name="go test diplom-2" type="GoTestRunConfiguration" factoryName="Go Test" nameIsGenerated="true">
+      <module name="diplom-2" />
+      <working_directory value="$PROJECT_DIR$" />
+      <go_parameters value="-i" />
+      <kind value="DIRECTORY" />
+      <package value="github.com/bubaew95/yandex-diplom-2" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Go Build.start" />
+      <item itemvalue="Go Test.go test diplom-2" />
+    </list>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-gosdk-d297c17c1fbd-57c114c3cede-org.jetbrains.plugins.go.sharedIndexes.bundled-GO-243.25659.52" />
+        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-GO-243.25659.52" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VgoProject">
+    <settings-migrated>true</settings-migrated>
+  </component>
+</project>
