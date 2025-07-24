@@ -2,23 +2,28 @@ package grpc
 
 import (
 	"context"
-	"fmt"
 	"github.com/bubaew95/yandex-diplom-2/internal/application/server/model"
+	"github.com/bubaew95/yandex-diplom-2/internal/logger"
 	pb "github.com/bubaew95/yandex-diplom-2/internal/proto"
+	"github.com/bubaew95/yandex-diplom-2/pkg/crypto"
+	"github.com/bubaew95/yandex-diplom-2/pkg/token"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"strings"
 )
 
 //go:generate go run github.com/vektra/mockery/v2@v2.52.2 --name=Service --filename=servicemock_test.go --inpackage
 type Service interface {
-	AddUser(ctx context.Context, r *model.RegistrationRequest) (model.RegistrationResponse, error)
-	Login(ctx context.Context, r *model.LoginRequest) (model.AuthResponse, error)
+	AddUser(ctx context.Context, r *model.RegistrationDTO) (model.RegistrationResponse, error)
+	Login(ctx context.Context, r *model.LoginDTO) (model.AuthResponse, error)
 
 	AddText(ctx context.Context, r *model.TextRequest) (model.TextResponse, error)
 	EditText(ctx context.Context, r *model.TextRequest) (model.TextResponse, error)
 	DeleteText(ctx context.Context, ID int64) error
+	FindAllText(ctx context.Context) ([]*pb.TextResponse, error)
 
 	AddCard(ctx context.Context, r *model.CardRequest) (model.CardResponse, error)
 	EditCard(ctx context.Context, r *model.CardRequest) (model.CardResponse, error)
@@ -37,47 +42,95 @@ func NewServer(service Service) *Server {
 }
 
 func LoginInterceptor() grpc.UnaryServerInterceptor {
+	publicMethods := map[string]struct{}{
+		"/gokeeper.GoKeeper/Registration": {},
+		"/gokeeper.GoKeeper/Login":        {},
+	}
+
 	return func(
 		ctx context.Context,
 		req interface{},
 		info *grpc.UnaryServerInfo,
 		handler grpc.UnaryHandler,
 	) (interface{}, error) {
+		if _, ok := publicMethods[info.FullMethod]; ok {
+			return handler(ctx, req)
+		}
+
 		md, ok := metadata.FromIncomingContext(ctx)
 		if !ok {
 			return nil, status.Error(codes.Unauthenticated, "metadata not found")
 		}
 
-		token := ""
+		tkn := ""
 		if vals := md.Get("token"); len(vals) > 0 {
-			token = vals[0]
+			tkn = vals[0]
 		}
 
-		fmt.Println(token)
+		if tkn == "" || !strings.HasPrefix(tkn, "Bearer") {
+			logger.Log.Debug("invalid token", zap.String("token", tkn))
+			return nil, status.Error(codes.Unauthenticated, "authorization error")
+		}
 
-		//if token == "" || ! {
-		//	rawID := crypto.GenerateUserID()
-		//	encodedID, err := crypto.EncodeUserID(rawID)
-		//	if err != nil {
-		//		return nil, status.Error(codes.Internal, "user ID encoding failed")
-		//	}
-		//	userID = encodedID
-		//}
-		//
-		//ctx = context.WithValue(ctx, crypto.KeyUser, userID)
-		return handler(ctx, req)
+		user, err := token.DecodeJWTToken(tkn[7:])
+		if err != nil {
+			logger.Log.Debug("token decode error", zap.Error(err))
+			return nil, status.Error(codes.Unauthenticated, err.Error())
+		}
+
+		nCtx := context.WithValue(ctx, crypto.KeyUser, user)
+		return handler(nCtx, req)
 	}
 }
 
-func (s *Server) AddText(ctx context.Context, r *pb.TextRequest) (*pb.TextResponse, error) {
-	ctxx := context.WithValue(ctx, "user", model.User{
-		ID:        1,
-		FirstName: "John",
-		LastName:  "Doe",
-		Email:     "john@doe.com",
+func (s *Server) Registration(ctx context.Context, r *pb.RegistrationRequest) (*pb.TokenResponse, error) {
+	regData := model.RegistrationDTO{
+		User: model.User{
+			FirstName: r.FirstName,
+			LastName:  r.LastName,
+			Email:     r.Email,
+			Password:  r.Password,
+		},
+		RePassword: r.RePassword,
+	}
+
+	if valid := regData.Validate(); len(valid) != 0 {
+		logger.Log.Debug("invalid regData", zap.Any("regData", valid))
+		return nil, status.Error(codes.InvalidArgument, "invalid registration request")
+	}
+
+	reg, err := s.service.AddUser(ctx, &regData)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	tkn, err := token.EncodeJWTToken(reg.User)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &pb.TokenResponse{
+		Token: tkn,
+	}, nil
+}
+
+func (s *Server) Login(ctx context.Context, r *pb.LoginRequest) (*pb.TokenResponse, error) {
+	user, err := s.service.Login(ctx, &model.LoginDTO{
+		Email:    r.Email,
+		Password: r.Password,
 	})
 
-	data, err := s.service.AddText(ctxx, &model.TextRequest{
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &pb.TokenResponse{
+		Token: user.Token,
+	}, nil
+}
+
+func (s *Server) AddText(ctx context.Context, r *pb.TextRequest) (*pb.TextResponse, error) {
+	data, err := s.service.AddText(ctx, &model.TextRequest{
 		Text: r.Text,
 	})
 
@@ -114,6 +167,16 @@ func (s *Server) DeleteText(ctx context.Context, r *pb.IdRequest) (*pb.SuccessRe
 
 	return &pb.SuccessResponse{
 		Success: true,
+	}, nil
+}
+func (s *Server) FindAllText(ctx context.Context, r *pb.DataRequest) (*pb.TextList, error) {
+	list, err := s.service.FindAllText(ctx)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &pb.TextList{
+		List: list,
 	}, nil
 }
 

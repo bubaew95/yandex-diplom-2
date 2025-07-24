@@ -13,7 +13,7 @@ type User struct {
 	Password  string `json:"password"`
 }
 
-type RegistrationRequest struct {
+type RegistrationDTO struct {
 	User
 	RePassword string `json:"re_password,omitempty"`
 }
@@ -26,12 +26,12 @@ type AuthResponse struct {
 	Token string `json:"token"`
 }
 
-type LoginRequest struct {
+type LoginDTO struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
-func (r *RegistrationRequest) Validate() map[string]string {
+func (r *RegistrationDTO) Validate() map[string]string {
 	fields := make(map[string]string)
 
 	if r.Email == "" {

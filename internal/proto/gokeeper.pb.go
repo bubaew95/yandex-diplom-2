@@ -21,6 +21,214 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type RegistrationRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	FirstName     string                 `protobuf:"bytes,1,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
+	LastName      string                 `protobuf:"bytes,2,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
+	Email         string                 `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
+	Password      string                 `protobuf:"bytes,4,opt,name=password,proto3" json:"password,omitempty"`
+	RePassword    string                 `protobuf:"bytes,5,opt,name=re_password,json=rePassword,proto3" json:"re_password,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RegistrationRequest) Reset() {
+	*x = RegistrationRequest{}
+	mi := &file_gokeeper_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RegistrationRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RegistrationRequest) ProtoMessage() {}
+
+func (x *RegistrationRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gokeeper_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RegistrationRequest.ProtoReflect.Descriptor instead.
+func (*RegistrationRequest) Descriptor() ([]byte, []int) {
+	return file_gokeeper_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *RegistrationRequest) GetFirstName() string {
+	if x != nil {
+		return x.FirstName
+	}
+	return ""
+}
+
+func (x *RegistrationRequest) GetLastName() string {
+	if x != nil {
+		return x.LastName
+	}
+	return ""
+}
+
+func (x *RegistrationRequest) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+func (x *RegistrationRequest) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
+}
+
+func (x *RegistrationRequest) GetRePassword() string {
+	if x != nil {
+		return x.RePassword
+	}
+	return ""
+}
+
+type LoginRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Email         string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
+	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LoginRequest) Reset() {
+	*x = LoginRequest{}
+	mi := &file_gokeeper_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LoginRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LoginRequest) ProtoMessage() {}
+
+func (x *LoginRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gokeeper_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LoginRequest.ProtoReflect.Descriptor instead.
+func (*LoginRequest) Descriptor() ([]byte, []int) {
+	return file_gokeeper_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *LoginRequest) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+func (x *LoginRequest) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
+}
+
+type TokenResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TokenResponse) Reset() {
+	*x = TokenResponse{}
+	mi := &file_gokeeper_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TokenResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TokenResponse) ProtoMessage() {}
+
+func (x *TokenResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gokeeper_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TokenResponse.ProtoReflect.Descriptor instead.
+func (*TokenResponse) Descriptor() ([]byte, []int) {
+	return file_gokeeper_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *TokenResponse) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
+}
+
+type DataRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DataRequest) Reset() {
+	*x = DataRequest{}
+	mi := &file_gokeeper_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DataRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DataRequest) ProtoMessage() {}
+
+func (x *DataRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gokeeper_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DataRequest.ProtoReflect.Descriptor instead.
+func (*DataRequest) Descriptor() ([]byte, []int) {
+	return file_gokeeper_proto_rawDescGZIP(), []int{3}
+}
+
 type TextRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Text          string                 `protobuf:"bytes,1,opt,name=text,proto3" json:"text,omitempty"`
@@ -30,7 +238,7 @@ type TextRequest struct {
 
 func (x *TextRequest) Reset() {
 	*x = TextRequest{}
-	mi := &file_gokeeper_proto_msgTypes[0]
+	mi := &file_gokeeper_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -42,7 +250,7 @@ func (x *TextRequest) String() string {
 func (*TextRequest) ProtoMessage() {}
 
 func (x *TextRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gokeeper_proto_msgTypes[0]
+	mi := &file_gokeeper_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -55,7 +263,7 @@ func (x *TextRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TextRequest.ProtoReflect.Descriptor instead.
 func (*TextRequest) Descriptor() ([]byte, []int) {
-	return file_gokeeper_proto_rawDescGZIP(), []int{0}
+	return file_gokeeper_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *TextRequest) GetText() string {
@@ -75,7 +283,7 @@ type TextEditRequest struct {
 
 func (x *TextEditRequest) Reset() {
 	*x = TextEditRequest{}
-	mi := &file_gokeeper_proto_msgTypes[1]
+	mi := &file_gokeeper_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -87,7 +295,7 @@ func (x *TextEditRequest) String() string {
 func (*TextEditRequest) ProtoMessage() {}
 
 func (x *TextEditRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gokeeper_proto_msgTypes[1]
+	mi := &file_gokeeper_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -100,7 +308,7 @@ func (x *TextEditRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TextEditRequest.ProtoReflect.Descriptor instead.
 func (*TextEditRequest) Descriptor() ([]byte, []int) {
-	return file_gokeeper_proto_rawDescGZIP(), []int{1}
+	return file_gokeeper_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *TextEditRequest) GetId() int64 {
@@ -129,7 +337,7 @@ type TextResponse struct {
 
 func (x *TextResponse) Reset() {
 	*x = TextResponse{}
-	mi := &file_gokeeper_proto_msgTypes[2]
+	mi := &file_gokeeper_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -141,7 +349,7 @@ func (x *TextResponse) String() string {
 func (*TextResponse) ProtoMessage() {}
 
 func (x *TextResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gokeeper_proto_msgTypes[2]
+	mi := &file_gokeeper_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -154,7 +362,7 @@ func (x *TextResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TextResponse.ProtoReflect.Descriptor instead.
 func (*TextResponse) Descriptor() ([]byte, []int) {
-	return file_gokeeper_proto_rawDescGZIP(), []int{2}
+	return file_gokeeper_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *TextResponse) GetId() int64 {
@@ -185,6 +393,50 @@ func (x *TextResponse) GetIsDeleted() bool {
 	return false
 }
 
+type TextList struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	List          []*TextResponse        `protobuf:"bytes,1,rep,name=List,proto3" json:"List,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TextList) Reset() {
+	*x = TextList{}
+	mi := &file_gokeeper_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TextList) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TextList) ProtoMessage() {}
+
+func (x *TextList) ProtoReflect() protoreflect.Message {
+	mi := &file_gokeeper_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TextList.ProtoReflect.Descriptor instead.
+func (*TextList) Descriptor() ([]byte, []int) {
+	return file_gokeeper_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *TextList) GetList() []*TextResponse {
+	if x != nil {
+		return x.List
+	}
+	return nil
+}
+
 type CardRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Number        string                 `protobuf:"bytes,1,opt,name=number,proto3" json:"number,omitempty"`
@@ -194,7 +446,7 @@ type CardRequest struct {
 
 func (x *CardRequest) Reset() {
 	*x = CardRequest{}
-	mi := &file_gokeeper_proto_msgTypes[3]
+	mi := &file_gokeeper_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -206,7 +458,7 @@ func (x *CardRequest) String() string {
 func (*CardRequest) ProtoMessage() {}
 
 func (x *CardRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gokeeper_proto_msgTypes[3]
+	mi := &file_gokeeper_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -219,7 +471,7 @@ func (x *CardRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CardRequest.ProtoReflect.Descriptor instead.
 func (*CardRequest) Descriptor() ([]byte, []int) {
-	return file_gokeeper_proto_rawDescGZIP(), []int{3}
+	return file_gokeeper_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *CardRequest) GetNumber() string {
@@ -239,7 +491,7 @@ type CardEditRequest struct {
 
 func (x *CardEditRequest) Reset() {
 	*x = CardEditRequest{}
-	mi := &file_gokeeper_proto_msgTypes[4]
+	mi := &file_gokeeper_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -251,7 +503,7 @@ func (x *CardEditRequest) String() string {
 func (*CardEditRequest) ProtoMessage() {}
 
 func (x *CardEditRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gokeeper_proto_msgTypes[4]
+	mi := &file_gokeeper_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -264,7 +516,7 @@ func (x *CardEditRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CardEditRequest.ProtoReflect.Descriptor instead.
 func (*CardEditRequest) Descriptor() ([]byte, []int) {
-	return file_gokeeper_proto_rawDescGZIP(), []int{4}
+	return file_gokeeper_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *CardEditRequest) GetId() int64 {
@@ -293,7 +545,7 @@ type CardResponse struct {
 
 func (x *CardResponse) Reset() {
 	*x = CardResponse{}
-	mi := &file_gokeeper_proto_msgTypes[5]
+	mi := &file_gokeeper_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -305,7 +557,7 @@ func (x *CardResponse) String() string {
 func (*CardResponse) ProtoMessage() {}
 
 func (x *CardResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gokeeper_proto_msgTypes[5]
+	mi := &file_gokeeper_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -318,7 +570,7 @@ func (x *CardResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CardResponse.ProtoReflect.Descriptor instead.
 func (*CardResponse) Descriptor() ([]byte, []int) {
-	return file_gokeeper_proto_rawDescGZIP(), []int{5}
+	return file_gokeeper_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *CardResponse) GetId() int64 {
@@ -349,6 +601,50 @@ func (x *CardResponse) GetIsDeleted() bool {
 	return false
 }
 
+type CardList struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	List          []*CardResponse        `protobuf:"bytes,1,rep,name=List,proto3" json:"List,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CardList) Reset() {
+	*x = CardList{}
+	mi := &file_gokeeper_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CardList) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CardList) ProtoMessage() {}
+
+func (x *CardList) ProtoReflect() protoreflect.Message {
+	mi := &file_gokeeper_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CardList.ProtoReflect.Descriptor instead.
+func (*CardList) Descriptor() ([]byte, []int) {
+	return file_gokeeper_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *CardList) GetList() []*CardResponse {
+	if x != nil {
+		return x.List
+	}
+	return nil
+}
+
 type IdRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -358,7 +654,7 @@ type IdRequest struct {
 
 func (x *IdRequest) Reset() {
 	*x = IdRequest{}
-	mi := &file_gokeeper_proto_msgTypes[6]
+	mi := &file_gokeeper_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -370,7 +666,7 @@ func (x *IdRequest) String() string {
 func (*IdRequest) ProtoMessage() {}
 
 func (x *IdRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gokeeper_proto_msgTypes[6]
+	mi := &file_gokeeper_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -383,7 +679,7 @@ func (x *IdRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IdRequest.ProtoReflect.Descriptor instead.
 func (*IdRequest) Descriptor() ([]byte, []int) {
-	return file_gokeeper_proto_rawDescGZIP(), []int{6}
+	return file_gokeeper_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *IdRequest) GetId() int64 {
@@ -402,7 +698,7 @@ type SuccessResponse struct {
 
 func (x *SuccessResponse) Reset() {
 	*x = SuccessResponse{}
-	mi := &file_gokeeper_proto_msgTypes[7]
+	mi := &file_gokeeper_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -414,7 +710,7 @@ func (x *SuccessResponse) String() string {
 func (*SuccessResponse) ProtoMessage() {}
 
 func (x *SuccessResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gokeeper_proto_msgTypes[7]
+	mi := &file_gokeeper_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -427,7 +723,7 @@ func (x *SuccessResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SuccessResponse.ProtoReflect.Descriptor instead.
 func (*SuccessResponse) Descriptor() ([]byte, []int) {
-	return file_gokeeper_proto_rawDescGZIP(), []int{7}
+	return file_gokeeper_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *SuccessResponse) GetSuccess() bool {
@@ -441,7 +737,21 @@ var File_gokeeper_proto protoreflect.FileDescriptor
 
 const file_gokeeper_proto_rawDesc = "" +
 	"\n" +
-	"\x0egokeeper.proto\x12\bgokeeper\"!\n" +
+	"\x0egokeeper.proto\x12\bgokeeper\"\xa4\x01\n" +
+	"\x13RegistrationRequest\x12\x1d\n" +
+	"\n" +
+	"first_name\x18\x01 \x01(\tR\tfirstName\x12\x1b\n" +
+	"\tlast_name\x18\x02 \x01(\tR\blastName\x12\x14\n" +
+	"\x05email\x18\x03 \x01(\tR\x05email\x12\x1a\n" +
+	"\bpassword\x18\x04 \x01(\tR\bpassword\x12\x1f\n" +
+	"\vre_password\x18\x05 \x01(\tR\n" +
+	"rePassword\"@\n" +
+	"\fLoginRequest\x12\x14\n" +
+	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\"%\n" +
+	"\rTokenResponse\x12\x14\n" +
+	"\x05token\x18\x01 \x01(\tR\x05token\"\r\n" +
+	"\vDataRequest\"!\n" +
 	"\vTextRequest\x12\x12\n" +
 	"\x04text\x18\x01 \x01(\tR\x04text\"5\n" +
 	"\x0fTextEditRequest\x12\x0e\n" +
@@ -452,7 +762,9 @@ const file_gokeeper_proto_rawDesc = "" +
 	"\x04text\x18\x02 \x01(\tR\x04text\x12\x17\n" +
 	"\auser_id\x18\x03 \x01(\x03R\x06userId\x12\x1d\n" +
 	"\n" +
-	"is_deleted\x18\x04 \x01(\bR\tisDeleted\"%\n" +
+	"is_deleted\x18\x04 \x01(\bR\tisDeleted\"6\n" +
+	"\bTextList\x12*\n" +
+	"\x04List\x18\x01 \x03(\v2\x16.gokeeper.TextResponseR\x04List\"%\n" +
 	"\vCardRequest\x12\x16\n" +
 	"\x06number\x18\x01 \x01(\tR\x06number\"9\n" +
 	"\x0fCardEditRequest\x12\x0e\n" +
@@ -463,20 +775,26 @@ const file_gokeeper_proto_rawDesc = "" +
 	"\x06number\x18\x02 \x01(\tR\x06number\x12\x17\n" +
 	"\auser_id\x18\x03 \x01(\x03R\x06userId\x12\x1d\n" +
 	"\n" +
-	"is_deleted\x18\x04 \x01(\bR\tisDeleted\"\x1b\n" +
+	"is_deleted\x18\x04 \x01(\bR\tisDeleted\"6\n" +
+	"\bCardList\x12*\n" +
+	"\x04List\x18\x01 \x03(\v2\x16.gokeeper.CardResponseR\x04List\"\x1b\n" +
 	"\tIdRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\"+\n" +
 	"\x0fSuccessResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess2\xf8\x02\n" +
-	"\bGoKeeper\x128\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess2\xef\x04\n" +
+	"\bGoKeeper\x12F\n" +
+	"\fRegistration\x12\x1d.gokeeper.RegistrationRequest\x1a\x17.gokeeper.TokenResponse\x128\n" +
+	"\x05Login\x12\x16.gokeeper.LoginRequest\x1a\x17.gokeeper.TokenResponse\x128\n" +
 	"\aAddText\x12\x15.gokeeper.TextRequest\x1a\x16.gokeeper.TextResponse\x12=\n" +
 	"\bEditText\x12\x19.gokeeper.TextEditRequest\x1a\x16.gokeeper.TextResponse\x12<\n" +
 	"\n" +
 	"DeleteText\x12\x13.gokeeper.IdRequest\x1a\x19.gokeeper.SuccessResponse\x128\n" +
+	"\vFindAllText\x12\x15.gokeeper.DataRequest\x1a\x12.gokeeper.TextList\x128\n" +
 	"\aAddCard\x12\x15.gokeeper.CardRequest\x1a\x16.gokeeper.CardResponse\x12=\n" +
 	"\bEditCard\x12\x19.gokeeper.CardEditRequest\x1a\x16.gokeeper.CardResponse\x12<\n" +
 	"\n" +
-	"DeleteCard\x12\x13.gokeeper.IdRequest\x1a\x19.gokeeper.SuccessResponseB:Z8github.com/bubaew95/yandex-diplom-2/internal/proto;protob\x06proto3"
+	"DeleteCard\x12\x13.gokeeper.IdRequest\x1a\x19.gokeeper.SuccessResponse\x129\n" +
+	"\fFindAllCards\x12\x15.gokeeper.DataRequest\x1a\x12.gokeeper.CardListB:Z8github.com/bubaew95/yandex-diplom-2/internal/proto;protob\x06proto3"
 
 var (
 	file_gokeeper_proto_rawDescOnce sync.Once
@@ -490,35 +808,51 @@ func file_gokeeper_proto_rawDescGZIP() []byte {
 	return file_gokeeper_proto_rawDescData
 }
 
-var file_gokeeper_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_gokeeper_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_gokeeper_proto_goTypes = []any{
-	(*TextRequest)(nil),     // 0: gokeeper.TextRequest
-	(*TextEditRequest)(nil), // 1: gokeeper.TextEditRequest
-	(*TextResponse)(nil),    // 2: gokeeper.TextResponse
-	(*CardRequest)(nil),     // 3: gokeeper.CardRequest
-	(*CardEditRequest)(nil), // 4: gokeeper.CardEditRequest
-	(*CardResponse)(nil),    // 5: gokeeper.CardResponse
-	(*IdRequest)(nil),       // 6: gokeeper.IdRequest
-	(*SuccessResponse)(nil), // 7: gokeeper.SuccessResponse
+	(*RegistrationRequest)(nil), // 0: gokeeper.RegistrationRequest
+	(*LoginRequest)(nil),        // 1: gokeeper.LoginRequest
+	(*TokenResponse)(nil),       // 2: gokeeper.TokenResponse
+	(*DataRequest)(nil),         // 3: gokeeper.DataRequest
+	(*TextRequest)(nil),         // 4: gokeeper.TextRequest
+	(*TextEditRequest)(nil),     // 5: gokeeper.TextEditRequest
+	(*TextResponse)(nil),        // 6: gokeeper.TextResponse
+	(*TextList)(nil),            // 7: gokeeper.TextList
+	(*CardRequest)(nil),         // 8: gokeeper.CardRequest
+	(*CardEditRequest)(nil),     // 9: gokeeper.CardEditRequest
+	(*CardResponse)(nil),        // 10: gokeeper.CardResponse
+	(*CardList)(nil),            // 11: gokeeper.CardList
+	(*IdRequest)(nil),           // 12: gokeeper.IdRequest
+	(*SuccessResponse)(nil),     // 13: gokeeper.SuccessResponse
 }
 var file_gokeeper_proto_depIdxs = []int32{
-	0, // 0: gokeeper.GoKeeper.AddText:input_type -> gokeeper.TextRequest
-	1, // 1: gokeeper.GoKeeper.EditText:input_type -> gokeeper.TextEditRequest
-	6, // 2: gokeeper.GoKeeper.DeleteText:input_type -> gokeeper.IdRequest
-	3, // 3: gokeeper.GoKeeper.AddCard:input_type -> gokeeper.CardRequest
-	4, // 4: gokeeper.GoKeeper.EditCard:input_type -> gokeeper.CardEditRequest
-	6, // 5: gokeeper.GoKeeper.DeleteCard:input_type -> gokeeper.IdRequest
-	2, // 6: gokeeper.GoKeeper.AddText:output_type -> gokeeper.TextResponse
-	2, // 7: gokeeper.GoKeeper.EditText:output_type -> gokeeper.TextResponse
-	7, // 8: gokeeper.GoKeeper.DeleteText:output_type -> gokeeper.SuccessResponse
-	5, // 9: gokeeper.GoKeeper.AddCard:output_type -> gokeeper.CardResponse
-	5, // 10: gokeeper.GoKeeper.EditCard:output_type -> gokeeper.CardResponse
-	7, // 11: gokeeper.GoKeeper.DeleteCard:output_type -> gokeeper.SuccessResponse
-	6, // [6:12] is the sub-list for method output_type
-	0, // [0:6] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	6,  // 0: gokeeper.TextList.List:type_name -> gokeeper.TextResponse
+	10, // 1: gokeeper.CardList.List:type_name -> gokeeper.CardResponse
+	0,  // 2: gokeeper.GoKeeper.Registration:input_type -> gokeeper.RegistrationRequest
+	1,  // 3: gokeeper.GoKeeper.Login:input_type -> gokeeper.LoginRequest
+	4,  // 4: gokeeper.GoKeeper.AddText:input_type -> gokeeper.TextRequest
+	5,  // 5: gokeeper.GoKeeper.EditText:input_type -> gokeeper.TextEditRequest
+	12, // 6: gokeeper.GoKeeper.DeleteText:input_type -> gokeeper.IdRequest
+	3,  // 7: gokeeper.GoKeeper.FindAllText:input_type -> gokeeper.DataRequest
+	8,  // 8: gokeeper.GoKeeper.AddCard:input_type -> gokeeper.CardRequest
+	9,  // 9: gokeeper.GoKeeper.EditCard:input_type -> gokeeper.CardEditRequest
+	12, // 10: gokeeper.GoKeeper.DeleteCard:input_type -> gokeeper.IdRequest
+	3,  // 11: gokeeper.GoKeeper.FindAllCards:input_type -> gokeeper.DataRequest
+	2,  // 12: gokeeper.GoKeeper.Registration:output_type -> gokeeper.TokenResponse
+	2,  // 13: gokeeper.GoKeeper.Login:output_type -> gokeeper.TokenResponse
+	6,  // 14: gokeeper.GoKeeper.AddText:output_type -> gokeeper.TextResponse
+	6,  // 15: gokeeper.GoKeeper.EditText:output_type -> gokeeper.TextResponse
+	13, // 16: gokeeper.GoKeeper.DeleteText:output_type -> gokeeper.SuccessResponse
+	7,  // 17: gokeeper.GoKeeper.FindAllText:output_type -> gokeeper.TextList
+	10, // 18: gokeeper.GoKeeper.AddCard:output_type -> gokeeper.CardResponse
+	10, // 19: gokeeper.GoKeeper.EditCard:output_type -> gokeeper.CardResponse
+	13, // 20: gokeeper.GoKeeper.DeleteCard:output_type -> gokeeper.SuccessResponse
+	11, // 21: gokeeper.GoKeeper.FindAllCards:output_type -> gokeeper.CardList
+	12, // [12:22] is the sub-list for method output_type
+	2,  // [2:12] is the sub-list for method input_type
+	2,  // [2:2] is the sub-list for extension type_name
+	2,  // [2:2] is the sub-list for extension extendee
+	0,  // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_gokeeper_proto_init() }
@@ -532,7 +866,7 @@ func file_gokeeper_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_gokeeper_proto_rawDesc), len(file_gokeeper_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   8,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

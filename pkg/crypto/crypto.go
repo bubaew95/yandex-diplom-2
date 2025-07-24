@@ -19,13 +19,13 @@ var (
 
 // DecodeHash расшифровывает закодированный идентификатор пользователя, зашифрованный с использованием AES.
 // Возвращает оригинальное строковое значение.
-func DecodeHash(token string) (string, error) {
+func DecodeHash(text string) (string, error) {
 	aesgcm, nonce, err := aesGcm()
 	if err != nil {
 		return "", err
 	}
 
-	encrypted, err := hex.DecodeString(token)
+	encrypted, err := hex.DecodeString(text)
 	if err != nil {
 		return "", err
 	}
@@ -39,13 +39,13 @@ func DecodeHash(token string) (string, error) {
 }
 
 // EncodeHash шифрует идентификатор пользователя с использованием AES и возвращает hex-представление.
-func EncodeHash(userID string) (string, error) {
+func EncodeHash(text string) (string, error) {
 	aesgcm, nonce, err := aesGcm()
 	if err != nil {
 		return "", err
 	}
 
-	dst := aesgcm.Seal(nil, nonce, []byte(userID), nil)
+	dst := aesgcm.Seal(nil, nonce, []byte(text), nil)
 	return fmt.Sprintf("%x", dst), nil
 }
 

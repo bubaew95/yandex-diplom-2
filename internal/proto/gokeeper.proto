@@ -5,14 +5,36 @@ package gokeeper;
 option go_package = "github.com/bubaew95/yandex-diplom-2/internal/proto;proto";
 
 service GoKeeper {
+  rpc Registration(RegistrationRequest) returns(TokenResponse);
+  rpc Login(LoginRequest) returns(TokenResponse);
+
   rpc AddText(TextRequest) returns(TextResponse);
   rpc EditText(TextEditRequest) returns(TextResponse);
   rpc DeleteText(IdRequest) returns(SuccessResponse);
+  rpc FindAllText(DataRequest) returns(TextList);
 
   rpc AddCard(CardRequest) returns(CardResponse);
   rpc EditCard(CardEditRequest) returns(CardResponse);
   rpc DeleteCard(IdRequest) returns(SuccessResponse);
+  rpc FindAllCards(DataRequest) returns(CardList);
 }
+
+message RegistrationRequest {
+  string first_name = 1;
+  string last_name = 2;
+  string email = 3;
+  string password = 4;
+  string re_password = 5;
+}
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+message TokenResponse {
+  string token = 1;
+}
+
+message DataRequest {}
 
 message TextRequest {
   string text = 1;
@@ -27,6 +49,9 @@ message TextResponse {
   int64 user_id = 3;
   bool is_deleted = 4;
 }
+message TextList {
+  repeated TextResponse List = 1;
+}
 
 message CardRequest {
   string number = 1;
@@ -40,6 +65,9 @@ message CardResponse {
   string number = 2;
   int64 user_id = 3;
   bool is_deleted = 4;
+}
+message CardList {
+  repeated CardResponse List = 1;
 }
 
 message IdRequest {

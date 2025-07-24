@@ -7,6 +7,7 @@ import (
 	"github.com/bubaew95/yandex-diplom-2/internal/application/server/model"
 	infra "github.com/bubaew95/yandex-diplom-2/internal/infra/database"
 	"github.com/bubaew95/yandex-diplom-2/internal/logger"
+	pb "github.com/bubaew95/yandex-diplom-2/internal/proto"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"go.uber.org/zap"
 )
@@ -19,7 +20,7 @@ func NewRepository(db *infra.DataBase) *Repository {
 	return &Repository{db: db}
 }
 
-func (s *Repository) CreateUser(ctx context.Context, r *model.RegistrationRequest) (int64, error) {
+func (s *Repository) CreateUser(ctx context.Context, r *model.RegistrationDTO) (int64, error) {
 	isUser, err := s.GetUserByEmail(ctx, r.Email)
 	if err != nil {
 		return -1, err
@@ -54,7 +55,7 @@ func (s *Repository) GetUserByEmail(ctx context.Context, email string) (bool, er
 
 	return true, nil
 }
-func (s *Repository) FindUserByEmail(ctx context.Context, r *model.LoginRequest) (model.User, error) {
+func (s *Repository) FindUserByEmail(ctx context.Context, r *model.LoginDTO) (model.User, error) {
 	var user model.User
 	sqlQuery := `SELECT id, email, first_name, last_name, password FROM users WHERE email = $1`
 	row := s.db.QueryRowContext(ctx, sqlQuery, r.Email)
@@ -134,6 +135,30 @@ func (s *Repository) GetText(ctx context.Context, ID int64) (model.TextResponse,
 	}
 
 	return text, nil
+}
+func (s *Repository) FindAllText(ctx context.Context, userID int64) ([]*pb.TextResponse, error) {
+	sqlQuery := `SELECT id, text, user_id, is_deleted FROM text_data WHERE user_id = $1 AND is_deleted = false`
+	rows, err := s.db.QueryContext(ctx, sqlQuery, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	list := make([]*pb.TextResponse, 0)
+	for rows.Next() {
+		var text pb.TextResponse
+		if err := rows.Scan(&text.Id, &text.Text, &text.UserId, &text.IsDeleted); err != nil {
+			return nil, err
+		}
+
+		list = append(list, &text)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return list, nil
 }
 
 //Card table
