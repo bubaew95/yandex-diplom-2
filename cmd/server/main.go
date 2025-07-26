@@ -27,15 +27,15 @@ func init() {
 
 func main() {
 	cfg := config.NewConfig()
-	db, err := infra.NewDB(&cfg)
+	db, err := infra.NewDB(cfg)
 	if err != nil {
 		logger.Log.Fatal("Failed to initialize database", zap.Error(err))
 	}
 
 	repo := repository.NewRepository(db)
-	srv := service.NewService(repo, cfg)
+	srv := service.NewService(repo, *cfg)
 
-	server := httpServer.NewServer(srv, cfg)
+	server := httpServer.NewServer(srv, *cfg)
 	server.Start()
 
 	ch := make(chan os.Signal, 1)

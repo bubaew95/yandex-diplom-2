@@ -21,7 +21,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	GoKeeper_Registration_FullMethodName = "/gokeeper.GoKeeper/Registration"
 	GoKeeper_Login_FullMethodName        = "/gokeeper.GoKeeper/Login"
-	GoKeeper_AddText_FullMethodName      = "/gokeeper.GoKeeper/AddText"
+	GoKeeper_AddText_FullMethodName      = "/gokeeper.GoKeeper/Add"
 	GoKeeper_EditText_FullMethodName     = "/gokeeper.GoKeeper/EditText"
 	GoKeeper_DeleteText_FullMethodName   = "/gokeeper.GoKeeper/DeleteText"
 	GoKeeper_FindAllText_FullMethodName  = "/gokeeper.GoKeeper/FindAllText"
@@ -161,7 +161,7 @@ func (c *goKeeperClient) FindAllCards(ctx context.Context, in *DataRequest, opts
 type GoKeeperServer interface {
 	Registration(context.Context, *RegistrationRequest) (*TokenResponse, error)
 	Login(context.Context, *LoginRequest) (*TokenResponse, error)
-	AddText(context.Context, *TextRequest) (*TextResponse, error)
+	Add(context.Context, *TextRequest) (*TextResponse, error)
 	EditText(context.Context, *TextEditRequest) (*TextResponse, error)
 	DeleteText(context.Context, *IdRequest) (*SuccessResponse, error)
 	FindAllText(context.Context, *DataRequest) (*TextList, error)
@@ -185,8 +185,8 @@ func (UnimplementedGoKeeperServer) Registration(context.Context, *RegistrationRe
 func (UnimplementedGoKeeperServer) Login(context.Context, *LoginRequest) (*TokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
-func (UnimplementedGoKeeperServer) AddText(context.Context, *TextRequest) (*TextResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddText not implemented")
+func (UnimplementedGoKeeperServer) Add(context.Context, *TextRequest) (*TextResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Add not implemented")
 }
 func (UnimplementedGoKeeperServer) EditText(context.Context, *TextEditRequest) (*TextResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EditText not implemented")
@@ -272,14 +272,14 @@ func _GoKeeper_AddText_Handler(srv interface{}, ctx context.Context, dec func(in
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GoKeeperServer).AddText(ctx, in)
+		return srv.(GoKeeperServer).Add(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
 		FullMethod: GoKeeper_AddText_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GoKeeperServer).AddText(ctx, req.(*TextRequest))
+		return srv.(GoKeeperServer).Add(ctx, req.(*TextRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -426,7 +426,7 @@ var GoKeeper_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _GoKeeper_Login_Handler,
 		},
 		{
-			MethodName: "AddText",
+			MethodName: "Add",
 			Handler:    _GoKeeper_AddText_Handler,
 		},
 		{

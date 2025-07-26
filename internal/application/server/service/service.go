@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 	"github.com/bubaew95/yandex-diplom-2/config"
-	"github.com/bubaew95/yandex-diplom-2/internal/application/server/model"
 	"github.com/bubaew95/yandex-diplom-2/internal/logger"
+	"github.com/bubaew95/yandex-diplom-2/internal/model"
 	pb "github.com/bubaew95/yandex-diplom-2/internal/proto"
 	"github.com/bubaew95/yandex-diplom-2/pkg/crypto"
 	"github.com/bubaew95/yandex-diplom-2/pkg/token"
@@ -37,20 +37,20 @@ func NewService(repo Repository, cfg config.Config) *Service {
 	return &Service{repo: repo, cfg: cfg}
 }
 
-func (s Service) AddUser(ctx context.Context, r *model.RegistrationDTO) (model.RegistrationResponse, error) {
+func (s Service) AddUser(ctx context.Context, r *model.RegistrationDTO) (*model.AuthResponse, error) {
 	if r.Password != r.RePassword {
-		return model.RegistrationResponse{}, model.PasswordNotMatchError
+		return nil, model.PasswordNotMatchError
 	}
 
 	hash, err := crypto.EncodeHash(r.Password)
 	if err != nil {
-		return model.RegistrationResponse{}, err
+		return nil, err
 	}
 
 	r.Password = hash
 	userID, err := s.repo.CreateUser(ctx, r)
 	if err != nil {
-		return model.RegistrationResponse{}, err
+		return nil, err
 	}
 
 	user := model.User{
@@ -60,8 +60,13 @@ func (s Service) AddUser(ctx context.Context, r *model.RegistrationDTO) (model.R
 		LastName:  r.LastName,
 	}
 
-	return model.RegistrationResponse{
-		User: user,
+	jwt, err := token.EncodeJWTToken(user)
+	if err != nil {
+		return nil, model.AuthorizationError
+	}
+
+	return &model.AuthResponse{
+		Token: jwt,
 	}, nil
 }
 func (s Service) Login(ctx context.Context, r *model.LoginDTO) (model.AuthResponse, error) {
@@ -80,13 +85,13 @@ func (s Service) Login(ctx context.Context, r *model.LoginDTO) (model.AuthRespon
 		return model.AuthResponse{}, model.AuthorizationError
 	}
 
+	if user.Password != r.Password {
+		return model.AuthResponse{}, model.LoginAndPasswordError
+	}
+
 	jwt, err := token.EncodeJWTToken(user)
 	if err != nil {
 		return model.AuthResponse{}, model.AuthorizationError
-	}
-
-	if user.Password != r.Password {
-		return model.AuthResponse{}, model.LoginAndPasswordError
 	}
 
 	return model.AuthResponse{
@@ -94,7 +99,7 @@ func (s Service) Login(ctx context.Context, r *model.LoginDTO) (model.AuthRespon
 	}, nil
 }
 
-func (s Service) AddText(ctx context.Context, r *model.TextRequest) (model.TextResponse, error) {
+func (s Service) Add(ctx context.Context, r *model.TextRequest) (model.TextResponse, error) {
 	user := ctx.Value(crypto.KeyUser).(model.User)
 
 	hashText, err := crypto.EncodeHash(r.Text)

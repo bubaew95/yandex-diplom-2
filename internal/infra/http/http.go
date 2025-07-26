@@ -43,7 +43,7 @@ func (s *httpServer) Start() {
 }
 
 func (s *httpServer) listenGRPC() *grpc.Server {
-	listener, err := net.Listen("tcp", ":3232")
+	listener, err := net.Listen("tcp", ":"+s.config.Port)
 	if err != nil {
 		logger.Log.Fatal("Rpc server error", zap.Error(err))
 	}
@@ -51,7 +51,7 @@ func (s *httpServer) listenGRPC() *grpc.Server {
 	server := grpc.NewServer(grpc.UnaryInterceptor(grpcServer.LoginInterceptor()))
 	pb.RegisterGoKeeperServer(server, grpcServer.NewServer(s.srv))
 
-	logger.Log.Info("Run rpc server")
+	logger.Log.Info("Run rpc server. Port: " + s.config.Port)
 	if err := server.Serve(listener); err != nil {
 		s.chError <- fmt.Sprintf("Rpc server error: %s", err)
 	}

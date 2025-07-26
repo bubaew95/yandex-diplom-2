@@ -830,7 +830,7 @@ var file_gokeeper_proto_depIdxs = []int32{
 	10, // 1: gokeeper.CardList.List:type_name -> gokeeper.CardResponse
 	0,  // 2: gokeeper.GoKeeper.Registration:input_type -> gokeeper.RegistrationRequest
 	1,  // 3: gokeeper.GoKeeper.Login:input_type -> gokeeper.LoginRequest
-	4,  // 4: gokeeper.GoKeeper.AddText:input_type -> gokeeper.TextRequest
+	4,  // 4: gokeeper.GoKeeper.Add:input_type -> gokeeper.TextRequest
 	5,  // 5: gokeeper.GoKeeper.EditText:input_type -> gokeeper.TextEditRequest
 	12, // 6: gokeeper.GoKeeper.DeleteText:input_type -> gokeeper.IdRequest
 	3,  // 7: gokeeper.GoKeeper.FindAllText:input_type -> gokeeper.DataRequest
@@ -840,7 +840,7 @@ var file_gokeeper_proto_depIdxs = []int32{
 	3,  // 11: gokeeper.GoKeeper.FindAllCards:input_type -> gokeeper.DataRequest
 	2,  // 12: gokeeper.GoKeeper.Registration:output_type -> gokeeper.TokenResponse
 	2,  // 13: gokeeper.GoKeeper.Login:output_type -> gokeeper.TokenResponse
-	6,  // 14: gokeeper.GoKeeper.AddText:output_type -> gokeeper.TextResponse
+	6,  // 14: gokeeper.GoKeeper.Add:output_type -> gokeeper.TextResponse
 	6,  // 15: gokeeper.GoKeeper.EditText:output_type -> gokeeper.TextResponse
 	13, // 16: gokeeper.GoKeeper.DeleteText:output_type -> gokeeper.SuccessResponse
 	7,  // 17: gokeeper.GoKeeper.FindAllText:output_type -> gokeeper.TextList

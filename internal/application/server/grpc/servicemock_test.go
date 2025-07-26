@@ -77,7 +77,7 @@ func (_m *MockService) AddText(ctx context.Context, r *model.TextRequest) (model
 	ret := _m.Called(ctx, r)
 
 	if len(ret) == 0 {
-		panic("no return value specified for AddText")
+		panic("no return value specified for Add")
 	}
 
 	var r0 model.TextResponse

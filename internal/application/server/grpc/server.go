@@ -2,8 +2,10 @@ package grpc
 
 import (
 	"context"
-	"github.com/bubaew95/yandex-diplom-2/internal/application/server/model"
+	"errors"
+	"fmt"
 	"github.com/bubaew95/yandex-diplom-2/internal/logger"
+	"github.com/bubaew95/yandex-diplom-2/internal/model"
 	pb "github.com/bubaew95/yandex-diplom-2/internal/proto"
 	"github.com/bubaew95/yandex-diplom-2/pkg/crypto"
 	"github.com/bubaew95/yandex-diplom-2/pkg/token"
@@ -17,10 +19,10 @@ import (
 
 //go:generate go run github.com/vektra/mockery/v2@v2.52.2 --name=Service --filename=servicemock_test.go --inpackage
 type Service interface {
-	AddUser(ctx context.Context, r *model.RegistrationDTO) (model.RegistrationResponse, error)
+	AddUser(ctx context.Context, r *model.RegistrationDTO) (*model.AuthResponse, error)
 	Login(ctx context.Context, r *model.LoginDTO) (model.AuthResponse, error)
 
-	AddText(ctx context.Context, r *model.TextRequest) (model.TextResponse, error)
+	Add(ctx context.Context, r *model.TextRequest) (model.TextResponse, error)
 	EditText(ctx context.Context, r *model.TextRequest) (model.TextResponse, error)
 	DeleteText(ctx context.Context, ID int64) error
 	FindAllText(ctx context.Context) ([]*pb.TextResponse, error)
@@ -79,6 +81,8 @@ func LoginInterceptor() grpc.UnaryServerInterceptor {
 		}
 
 		nCtx := context.WithValue(ctx, crypto.KeyUser, user)
+		fmt.Println(user)
+
 		return handler(nCtx, req)
 	}
 }
@@ -99,18 +103,16 @@ func (s *Server) Registration(ctx context.Context, r *pb.RegistrationRequest) (*
 		return nil, status.Error(codes.InvalidArgument, "invalid registration request")
 	}
 
-	reg, err := s.service.AddUser(ctx, &regData)
+	jwt, err := s.service.AddUser(ctx, &regData)
 	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
-	}
-
-	tkn, err := token.EncodeJWTToken(reg.User)
-	if err != nil {
+		if errors.Is(err, model.UserAlreadyExistsError) {
+			return nil, status.Error(codes.AlreadyExists, err.Error())
+		}
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	return &pb.TokenResponse{
-		Token: tkn,
+		Token: jwt.Token,
 	}, nil
 }
 
@@ -129,8 +131,8 @@ func (s *Server) Login(ctx context.Context, r *pb.LoginRequest) (*pb.TokenRespon
 	}, nil
 }
 
-func (s *Server) AddText(ctx context.Context, r *pb.TextRequest) (*pb.TextResponse, error) {
-	data, err := s.service.AddText(ctx, &model.TextRequest{
+func (s *Server) Add(ctx context.Context, r *pb.TextRequest) (*pb.TextResponse, error) {
+	data, err := s.service.Add(ctx, &model.TextRequest{
 		Text: r.Text,
 	})
 

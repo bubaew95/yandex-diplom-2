@@ -2,7 +2,7 @@ package token
 
 import (
 	"fmt"
-	"github.com/bubaew95/yandex-diplom-2/internal/application/server/model"
+	"github.com/bubaew95/yandex-diplom-2/internal/model"
 	"github.com/golang-jwt/jwt/v5"
 	"net/http"
 	"time"

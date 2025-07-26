@@ -48,7 +48,7 @@ func (r *RegistrationDTO) Validate() map[string]string {
 	}
 
 	if r.Password != r.RePassword {
-		fields["password"] = "passwords don't match"
+		fields["password"] = "passwords not match"
 	}
 
 	if strings.TrimSpace(r.LastName) == "" {
@@ -60,4 +60,14 @@ func (r *RegistrationDTO) Validate() map[string]string {
 	}
 
 	return fields
+}
+
+func (r *RegistrationDTO) ErrorsRaw(errors map[string]string) string {
+	errText := ""
+
+	for _, value := range errors {
+		errText += value + "\n"
+	}
+
+	return errText
 }
