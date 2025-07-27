@@ -21,14 +21,10 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	GoKeeper_Registration_FullMethodName = "/gokeeper.GoKeeper/Registration"
 	GoKeeper_Login_FullMethodName        = "/gokeeper.GoKeeper/Login"
-	GoKeeper_AddText_FullMethodName      = "/gokeeper.GoKeeper/Add"
-	GoKeeper_EditText_FullMethodName     = "/gokeeper.GoKeeper/EditText"
-	GoKeeper_DeleteText_FullMethodName   = "/gokeeper.GoKeeper/DeleteText"
-	GoKeeper_FindAllText_FullMethodName  = "/gokeeper.GoKeeper/FindAllText"
-	GoKeeper_AddCard_FullMethodName      = "/gokeeper.GoKeeper/AddCard"
-	GoKeeper_EditCard_FullMethodName     = "/gokeeper.GoKeeper/EditCard"
-	GoKeeper_DeleteCard_FullMethodName   = "/gokeeper.GoKeeper/DeleteCard"
-	GoKeeper_FindAllCards_FullMethodName = "/gokeeper.GoKeeper/FindAllCards"
+	GoKeeper_Add_FullMethodName          = "/gokeeper.GoKeeper/Add"
+	GoKeeper_Edit_FullMethodName         = "/gokeeper.GoKeeper/Edit"
+	GoKeeper_Delete_FullMethodName       = "/gokeeper.GoKeeper/Delete"
+	GoKeeper_FindAll_FullMethodName      = "/gokeeper.GoKeeper/FindAll"
 )
 
 // GoKeeperClient is the client API for GoKeeper service.
@@ -37,14 +33,10 @@ const (
 type GoKeeperClient interface {
 	Registration(ctx context.Context, in *RegistrationRequest, opts ...grpc.CallOption) (*TokenResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*TokenResponse, error)
-	AddText(ctx context.Context, in *TextRequest, opts ...grpc.CallOption) (*TextResponse, error)
-	EditText(ctx context.Context, in *TextEditRequest, opts ...grpc.CallOption) (*TextResponse, error)
-	DeleteText(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*SuccessResponse, error)
-	FindAllText(ctx context.Context, in *DataRequest, opts ...grpc.CallOption) (*TextList, error)
-	AddCard(ctx context.Context, in *CardRequest, opts ...grpc.CallOption) (*CardResponse, error)
-	EditCard(ctx context.Context, in *CardEditRequest, opts ...grpc.CallOption) (*CardResponse, error)
-	DeleteCard(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*SuccessResponse, error)
-	FindAllCards(ctx context.Context, in *DataRequest, opts ...grpc.CallOption) (*CardList, error)
+	Add(ctx context.Context, in *DataRequest, opts ...grpc.CallOption) (*DataResponse, error)
+	Edit(ctx context.Context, in *DataEditRequest, opts ...grpc.CallOption) (*DataResponse, error)
+	Delete(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*SuccessResponse, error)
+	FindAll(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*DataList, error)
 }
 
 type goKeeperClient struct {
@@ -75,80 +67,40 @@ func (c *goKeeperClient) Login(ctx context.Context, in *LoginRequest, opts ...gr
 	return out, nil
 }
 
-func (c *goKeeperClient) AddText(ctx context.Context, in *TextRequest, opts ...grpc.CallOption) (*TextResponse, error) {
+func (c *goKeeperClient) Add(ctx context.Context, in *DataRequest, opts ...grpc.CallOption) (*DataResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(TextResponse)
-	err := c.cc.Invoke(ctx, GoKeeper_AddText_FullMethodName, in, out, cOpts...)
+	out := new(DataResponse)
+	err := c.cc.Invoke(ctx, GoKeeper_Add_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *goKeeperClient) EditText(ctx context.Context, in *TextEditRequest, opts ...grpc.CallOption) (*TextResponse, error) {
+func (c *goKeeperClient) Edit(ctx context.Context, in *DataEditRequest, opts ...grpc.CallOption) (*DataResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(TextResponse)
-	err := c.cc.Invoke(ctx, GoKeeper_EditText_FullMethodName, in, out, cOpts...)
+	out := new(DataResponse)
+	err := c.cc.Invoke(ctx, GoKeeper_Edit_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *goKeeperClient) DeleteText(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*SuccessResponse, error) {
+func (c *goKeeperClient) Delete(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*SuccessResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SuccessResponse)
-	err := c.cc.Invoke(ctx, GoKeeper_DeleteText_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, GoKeeper_Delete_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *goKeeperClient) FindAllText(ctx context.Context, in *DataRequest, opts ...grpc.CallOption) (*TextList, error) {
+func (c *goKeeperClient) FindAll(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*DataList, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(TextList)
-	err := c.cc.Invoke(ctx, GoKeeper_FindAllText_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *goKeeperClient) AddCard(ctx context.Context, in *CardRequest, opts ...grpc.CallOption) (*CardResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CardResponse)
-	err := c.cc.Invoke(ctx, GoKeeper_AddCard_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *goKeeperClient) EditCard(ctx context.Context, in *CardEditRequest, opts ...grpc.CallOption) (*CardResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CardResponse)
-	err := c.cc.Invoke(ctx, GoKeeper_EditCard_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *goKeeperClient) DeleteCard(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*SuccessResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(SuccessResponse)
-	err := c.cc.Invoke(ctx, GoKeeper_DeleteCard_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *goKeeperClient) FindAllCards(ctx context.Context, in *DataRequest, opts ...grpc.CallOption) (*CardList, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CardList)
-	err := c.cc.Invoke(ctx, GoKeeper_FindAllCards_FullMethodName, in, out, cOpts...)
+	out := new(DataList)
+	err := c.cc.Invoke(ctx, GoKeeper_FindAll_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -161,14 +113,10 @@ func (c *goKeeperClient) FindAllCards(ctx context.Context, in *DataRequest, opts
 type GoKeeperServer interface {
 	Registration(context.Context, *RegistrationRequest) (*TokenResponse, error)
 	Login(context.Context, *LoginRequest) (*TokenResponse, error)
-	Add(context.Context, *TextRequest) (*TextResponse, error)
-	EditText(context.Context, *TextEditRequest) (*TextResponse, error)
-	DeleteText(context.Context, *IdRequest) (*SuccessResponse, error)
-	FindAllText(context.Context, *DataRequest) (*TextList, error)
-	AddCard(context.Context, *CardRequest) (*CardResponse, error)
-	EditCard(context.Context, *CardEditRequest) (*CardResponse, error)
-	DeleteCard(context.Context, *IdRequest) (*SuccessResponse, error)
-	FindAllCards(context.Context, *DataRequest) (*CardList, error)
+	Add(context.Context, *DataRequest) (*DataResponse, error)
+	Edit(context.Context, *DataEditRequest) (*DataResponse, error)
+	Delete(context.Context, *IdRequest) (*SuccessResponse, error)
+	FindAll(context.Context, *EmptyRequest) (*DataList, error)
 	mustEmbedUnimplementedGoKeeperServer()
 }
 
@@ -185,29 +133,17 @@ func (UnimplementedGoKeeperServer) Registration(context.Context, *RegistrationRe
 func (UnimplementedGoKeeperServer) Login(context.Context, *LoginRequest) (*TokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
-func (UnimplementedGoKeeperServer) Add(context.Context, *TextRequest) (*TextResponse, error) {
+func (UnimplementedGoKeeperServer) Add(context.Context, *DataRequest) (*DataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Add not implemented")
 }
-func (UnimplementedGoKeeperServer) EditText(context.Context, *TextEditRequest) (*TextResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method EditText not implemented")
+func (UnimplementedGoKeeperServer) Edit(context.Context, *DataEditRequest) (*DataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Edit not implemented")
 }
-func (UnimplementedGoKeeperServer) DeleteText(context.Context, *IdRequest) (*SuccessResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteText not implemented")
+func (UnimplementedGoKeeperServer) Delete(context.Context, *IdRequest) (*SuccessResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
-func (UnimplementedGoKeeperServer) FindAllText(context.Context, *DataRequest) (*TextList, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FindAllText not implemented")
-}
-func (UnimplementedGoKeeperServer) AddCard(context.Context, *CardRequest) (*CardResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddCard not implemented")
-}
-func (UnimplementedGoKeeperServer) EditCard(context.Context, *CardEditRequest) (*CardResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method EditCard not implemented")
-}
-func (UnimplementedGoKeeperServer) DeleteCard(context.Context, *IdRequest) (*SuccessResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteCard not implemented")
-}
-func (UnimplementedGoKeeperServer) FindAllCards(context.Context, *DataRequest) (*CardList, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FindAllCards not implemented")
+func (UnimplementedGoKeeperServer) FindAll(context.Context, *EmptyRequest) (*DataList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindAll not implemented")
 }
 func (UnimplementedGoKeeperServer) mustEmbedUnimplementedGoKeeperServer() {}
 func (UnimplementedGoKeeperServer) testEmbeddedByValue()                  {}
@@ -266,8 +202,8 @@ func _GoKeeper_Login_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GoKeeper_AddText_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TextRequest)
+func _GoKeeper_Add_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DataRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -276,136 +212,64 @@ func _GoKeeper_AddText_Handler(srv interface{}, ctx context.Context, dec func(in
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: GoKeeper_AddText_FullMethodName,
+		FullMethod: GoKeeper_Add_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GoKeeperServer).Add(ctx, req.(*TextRequest))
+		return srv.(GoKeeperServer).Add(ctx, req.(*DataRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GoKeeper_EditText_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TextEditRequest)
+func _GoKeeper_Edit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DataEditRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GoKeeperServer).EditText(ctx, in)
+		return srv.(GoKeeperServer).Edit(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: GoKeeper_EditText_FullMethodName,
+		FullMethod: GoKeeper_Edit_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GoKeeperServer).EditText(ctx, req.(*TextEditRequest))
+		return srv.(GoKeeperServer).Edit(ctx, req.(*DataEditRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GoKeeper_DeleteText_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _GoKeeper_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(IdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GoKeeperServer).DeleteText(ctx, in)
+		return srv.(GoKeeperServer).Delete(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: GoKeeper_DeleteText_FullMethodName,
+		FullMethod: GoKeeper_Delete_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GoKeeperServer).DeleteText(ctx, req.(*IdRequest))
+		return srv.(GoKeeperServer).Delete(ctx, req.(*IdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GoKeeper_FindAllText_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DataRequest)
+func _GoKeeper_FindAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EmptyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GoKeeperServer).FindAllText(ctx, in)
+		return srv.(GoKeeperServer).FindAll(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: GoKeeper_FindAllText_FullMethodName,
+		FullMethod: GoKeeper_FindAll_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GoKeeperServer).FindAllText(ctx, req.(*DataRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _GoKeeper_AddCard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CardRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(GoKeeperServer).AddCard(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: GoKeeper_AddCard_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GoKeeperServer).AddCard(ctx, req.(*CardRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _GoKeeper_EditCard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CardEditRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(GoKeeperServer).EditCard(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: GoKeeper_EditCard_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GoKeeperServer).EditCard(ctx, req.(*CardEditRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _GoKeeper_DeleteCard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(IdRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(GoKeeperServer).DeleteCard(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: GoKeeper_DeleteCard_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GoKeeperServer).DeleteCard(ctx, req.(*IdRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _GoKeeper_FindAllCards_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DataRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(GoKeeperServer).FindAllCards(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: GoKeeper_FindAllCards_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GoKeeperServer).FindAllCards(ctx, req.(*DataRequest))
+		return srv.(GoKeeperServer).FindAll(ctx, req.(*EmptyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -427,35 +291,19 @@ var GoKeeper_ServiceDesc = grpc.ServiceDesc{
 		},
 		{
 			MethodName: "Add",
-			Handler:    _GoKeeper_AddText_Handler,
+			Handler:    _GoKeeper_Add_Handler,
 		},
 		{
-			MethodName: "EditText",
-			Handler:    _GoKeeper_EditText_Handler,
+			MethodName: "Edit",
+			Handler:    _GoKeeper_Edit_Handler,
 		},
 		{
-			MethodName: "DeleteText",
-			Handler:    _GoKeeper_DeleteText_Handler,
+			MethodName: "Delete",
+			Handler:    _GoKeeper_Delete_Handler,
 		},
 		{
-			MethodName: "FindAllText",
-			Handler:    _GoKeeper_FindAllText_Handler,
-		},
-		{
-			MethodName: "AddCard",
-			Handler:    _GoKeeper_AddCard_Handler,
-		},
-		{
-			MethodName: "EditCard",
-			Handler:    _GoKeeper_EditCard_Handler,
-		},
-		{
-			MethodName: "DeleteCard",
-			Handler:    _GoKeeper_DeleteCard_Handler,
-		},
-		{
-			MethodName: "FindAllCards",
-			Handler:    _GoKeeper_FindAllCards_Handler,
+			MethodName: "FindAll",
+			Handler:    _GoKeeper_FindAll_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

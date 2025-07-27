@@ -2,7 +2,6 @@ package client
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"github.com/bubaew95/yandex-diplom-2/config"
 	"github.com/bubaew95/yandex-diplom-2/internal/application/client/state"
@@ -11,20 +10,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
-)
-
-var (
-	ErrInvalidResponse  = errors.New("неверный ответ сервера")
-	ErrNotAuthenticated = errors.New("не авторизован")
-	ErrAuthFailed       = errors.New("аутентификация не удалась")
-	ErrDataNotFound     = errors.New("данные не найдены")
-)
-
-const (
-	httpErrorCodeStart     = 400
-	masterPasswordFileName = "master.key"
-	configDir              = ".gophkeeper"
-	clientTimeoutSeconds   = 10
 )
 
 type Client struct {
@@ -69,12 +54,53 @@ func (c *Client) authorizationToken(ctx context.Context) context.Context {
 	}))
 }
 
-func (c *Client) GetAllData(ctx context.Context) (*pb.TextList, error) {
+func (c *Client) GetAllData(ctx context.Context) (*pb.DataList, error) {
 	nCtx := c.authorizationToken(ctx)
-	data, err := c.KeeperClient.FindAllText(nCtx, &pb.DataRequest{})
+	data, err := c.KeeperClient.FindAll(nCtx, &pb.EmptyRequest{})
 	if err != nil {
 		return nil, err
 	}
 
 	return data, nil
+}
+
+func (c *Client) Add(ctx context.Context, data *model.Data) (bool, error) {
+	nCtx := c.authorizationToken(ctx)
+
+	_, err := c.KeeperClient.Add(nCtx, &pb.DataRequest{
+		Text: data.Text,
+		Type: string(data.Type),
+	})
+
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+func (c *Client) Edit(ctx context.Context, ID int64, data *model.Data) (bool, error) {
+	nCtx := c.authorizationToken(ctx)
+
+	_, err := c.KeeperClient.Edit(nCtx, &pb.DataEditRequest{
+		Id:   ID,
+		Text: data.Text,
+	})
+
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+func (c *Client) Delete(ctx context.Context, id *pb.IdRequest) (bool, error) {
+	nCtx := c.authorizationToken(ctx)
+
+	res, err := c.KeeperClient.Delete(nCtx, id)
+	if err != nil {
+		return false, err
+	}
+
+	return res.Success, nil
 }

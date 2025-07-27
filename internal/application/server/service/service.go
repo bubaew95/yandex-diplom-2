@@ -9,6 +9,7 @@ import (
 	"github.com/bubaew95/yandex-diplom-2/pkg/crypto"
 	"github.com/bubaew95/yandex-diplom-2/pkg/token"
 	"go.uber.org/zap"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Repository interface {
@@ -16,16 +17,10 @@ type Repository interface {
 	GetUserByEmail(ctx context.Context, email string) (bool, error)
 	FindUserByEmail(ctx context.Context, r *model.LoginDTO) (model.User, error)
 
-	AddText(ctx context.Context, r *model.TextRequest, userID int64) (int64, error)
-	EditText(ctx context.Context, r *model.TextRequest, userID int64) (int64, error)
-	DeleteText(ctx context.Context, userID int64, ID int64) error
-	FindAllText(ctx context.Context, userID int64) ([]*pb.TextResponse, error)
-
-	AddCard(ctx context.Context, r *model.CardRequest, userID int64) (int64, error)
-	EditCard(ctx context.Context, r *model.CardRequest, userID int64) (int64, error)
-	DeleteCard(ctx context.Context, userID int64, ID int64) error
-
-	AddBinary(ctx context.Context, r *model.BinaryRequest, userID int64) (int64, error)
+	AddText(ctx context.Context, r *model.Data, userID int64) (int64, error)
+	Edit(ctx context.Context, r *model.TextRequest, userID int64) (int64, error)
+	Delete(ctx context.Context, userID int64, ID int64) error
+	FindAll(ctx context.Context, userID int64) ([]*pb.DataResponse, error)
 }
 
 type Service struct {
@@ -42,12 +37,12 @@ func (s Service) AddUser(ctx context.Context, r *model.RegistrationDTO) (*model.
 		return nil, model.PasswordNotMatchError
 	}
 
-	hash, err := crypto.EncodeHash(r.Password)
+	hash, err := bcrypt.GenerateFromPassword([]byte(r.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
 	}
 
-	r.Password = hash
+	r.Password = string(hash)
 	userID, err := s.repo.CreateUser(ctx, r)
 	if err != nil {
 		return nil, err
@@ -70,22 +65,14 @@ func (s Service) AddUser(ctx context.Context, r *model.RegistrationDTO) (*model.
 	}, nil
 }
 func (s Service) Login(ctx context.Context, r *model.LoginDTO) (model.AuthResponse, error) {
-	passwordHash, err := crypto.EncodeHash(r.Password)
-	if err != nil {
-		return model.AuthResponse{}, model.ErrorResponse{
-			Message: err.Error(),
-		}
-	}
-
-	r.Password = passwordHash
-
 	user, err := s.repo.FindUserByEmail(ctx, r)
 	if err != nil {
 		logger.Log.Debug("login failed", zap.Error(err))
 		return model.AuthResponse{}, model.AuthorizationError
 	}
 
-	if user.Password != r.Password {
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(r.Password))
+	if err != nil {
 		return model.AuthResponse{}, model.LoginAndPasswordError
 	}
 
@@ -99,15 +86,9 @@ func (s Service) Login(ctx context.Context, r *model.LoginDTO) (model.AuthRespon
 	}, nil
 }
 
-func (s Service) Add(ctx context.Context, r *model.TextRequest) (model.TextResponse, error) {
+func (s Service) Add(ctx context.Context, r *model.Data) (model.TextResponse, error) {
 	user := ctx.Value(crypto.KeyUser).(model.User)
 
-	hashText, err := crypto.EncodeHash(r.Text)
-	if err != nil {
-		return model.TextResponse{}, err
-	}
-
-	r.Text = hashText
 	dataID, err := s.repo.AddText(ctx, r, user.ID)
 	if err != nil {
 		return model.TextResponse{}, err
@@ -119,16 +100,11 @@ func (s Service) Add(ctx context.Context, r *model.TextRequest) (model.TextRespo
 		UserID: user.ID,
 	}, nil
 }
-func (s Service) EditText(ctx context.Context, r *model.TextRequest) (model.TextResponse, error) {
+
+func (s Service) Edit(ctx context.Context, r *model.TextRequest) (model.TextResponse, error) {
 	user := ctx.Value(crypto.KeyUser).(model.User)
 
-	hashText, err := crypto.EncodeHash(r.Text)
-	if err != nil {
-		return model.TextResponse{}, err
-	}
-	r.Text = hashText
-
-	_, err = s.repo.EditText(ctx, r, user.ID)
+	_, err := s.repo.Edit(ctx, r, user.ID)
 	if err != nil {
 		return model.TextResponse{}, err
 	}
@@ -139,54 +115,15 @@ func (s Service) EditText(ctx context.Context, r *model.TextRequest) (model.Text
 		UserID: user.ID,
 	}, nil
 }
-func (s Service) DeleteText(ctx context.Context, ID int64) error {
+
+func (s Service) Delete(ctx context.Context, ID int64) error {
 	user := ctx.Value(crypto.KeyUser).(model.User)
 
-	return s.repo.DeleteText(ctx, user.ID, ID)
-}
-func (s Service) FindAllText(ctx context.Context) ([]*pb.TextResponse, error) {
-	user := ctx.Value(crypto.KeyUser).(model.User)
-
-	return s.repo.FindAllText(ctx, user.ID)
+	return s.repo.Delete(ctx, user.ID, ID)
 }
 
-func (s Service) AddCard(ctx context.Context, r *model.CardRequest) (model.CardResponse, error) {
-	user := ctx.Value(crypto.KeyUser).(model.User)
-	dataID, err := s.repo.AddCard(ctx, r, user.ID)
-	if err != nil {
-		return model.CardResponse{}, err
-	}
-
-	return model.CardResponse{
-		ID:     dataID,
-		Number: r.Number,
-		UserID: user.ID,
-	}, nil
-}
-func (s Service) EditCard(ctx context.Context, r *model.CardRequest) (model.CardResponse, error) {
+func (s Service) FindAll(ctx context.Context) ([]*pb.DataResponse, error) {
 	user := ctx.Value(crypto.KeyUser).(model.User)
 
-	_, err := s.repo.EditCard(ctx, r, user.ID)
-	if err != nil {
-		return model.CardResponse{}, err
-	}
-
-	return model.CardResponse{
-		ID:     r.ID,
-		Number: r.Number,
-		UserID: user.ID,
-	}, nil
-}
-func (s Service) DeleteCard(ctx context.Context, ID int64) error {
-	user := ctx.Value(crypto.KeyUser).(model.User)
-
-	return s.repo.DeleteCard(ctx, user.ID, ID)
-}
-
-func (s Service) AddBinary(ctx context.Context, r *model.BinaryRequest) (model.BinaryResponse, error) {
-	user := ctx.Value(crypto.KeyUser).(model.User)
-
-	return model.BinaryResponse{
-		UserID: user.ID,
-	}, nil
+	return s.repo.FindAll(ctx, user.ID)
 }

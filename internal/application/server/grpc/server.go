@@ -3,7 +3,6 @@ package grpc
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/bubaew95/yandex-diplom-2/internal/logger"
 	"github.com/bubaew95/yandex-diplom-2/internal/model"
 	pb "github.com/bubaew95/yandex-diplom-2/internal/proto"
@@ -22,16 +21,10 @@ type Service interface {
 	AddUser(ctx context.Context, r *model.RegistrationDTO) (*model.AuthResponse, error)
 	Login(ctx context.Context, r *model.LoginDTO) (model.AuthResponse, error)
 
-	Add(ctx context.Context, r *model.TextRequest) (model.TextResponse, error)
-	EditText(ctx context.Context, r *model.TextRequest) (model.TextResponse, error)
-	DeleteText(ctx context.Context, ID int64) error
-	FindAllText(ctx context.Context) ([]*pb.TextResponse, error)
-
-	AddCard(ctx context.Context, r *model.CardRequest) (model.CardResponse, error)
-	EditCard(ctx context.Context, r *model.CardRequest) (model.CardResponse, error)
-	DeleteCard(ctx context.Context, ID int64) error
-
-	AddBinary(ctx context.Context, r *model.BinaryRequest) (model.BinaryResponse, error)
+	Add(ctx context.Context, r *model.Data) (model.TextResponse, error)
+	Edit(ctx context.Context, r *model.TextRequest) (model.TextResponse, error)
+	Delete(ctx context.Context, ID int64) error
+	FindAll(ctx context.Context) ([]*pb.DataResponse, error)
 }
 
 type Server struct {
@@ -81,7 +74,6 @@ func LoginInterceptor() grpc.UnaryServerInterceptor {
 		}
 
 		nCtx := context.WithValue(ctx, crypto.KeyUser, user)
-		fmt.Println(user)
 
 		return handler(nCtx, req)
 	}
@@ -123,6 +115,9 @@ func (s *Server) Login(ctx context.Context, r *pb.LoginRequest) (*pb.TokenRespon
 	})
 
 	if err != nil {
+		if errors.Is(err, model.LoginAndPasswordError) {
+			return nil, status.Error(codes.NotFound, err.Error())
+		}
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
@@ -131,23 +126,25 @@ func (s *Server) Login(ctx context.Context, r *pb.LoginRequest) (*pb.TokenRespon
 	}, nil
 }
 
-func (s *Server) Add(ctx context.Context, r *pb.TextRequest) (*pb.TextResponse, error) {
-	data, err := s.service.Add(ctx, &model.TextRequest{
+func (s *Server) Add(ctx context.Context, r *pb.DataRequest) (*pb.DataResponse, error) {
+	data, err := s.service.Add(ctx, &model.Data{
 		Text: r.Text,
+		Type: model.DataType(r.Type),
 	})
 
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &pb.TextResponse{
+	return &pb.DataResponse{
 		Id:     data.ID,
 		Text:   data.Text,
 		UserId: data.UserID,
 	}, nil
 }
-func (s *Server) EditText(ctx context.Context, r *pb.TextEditRequest) (*pb.TextResponse, error) {
-	data, err := s.service.EditText(ctx, &model.TextRequest{
+
+func (s *Server) Edit(ctx context.Context, r *pb.DataEditRequest) (*pb.DataResponse, error) {
+	data, err := s.service.Edit(ctx, &model.TextRequest{
 		ID:   r.Id,
 		Text: r.Text,
 	})
@@ -156,14 +153,22 @@ func (s *Server) EditText(ctx context.Context, r *pb.TextEditRequest) (*pb.TextR
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &pb.TextResponse{
+	return &pb.DataResponse{
 		Id:     data.ID,
 		Text:   data.Text,
 		UserId: data.UserID,
 	}, nil
 }
-func (s *Server) DeleteText(ctx context.Context, r *pb.IdRequest) (*pb.SuccessResponse, error) {
-	if err := s.service.DeleteText(ctx, r.Id); err != nil {
+func (s *Server) Delete(ctx context.Context, r *pb.IdRequest) (*pb.SuccessResponse, error) {
+	if err := s.service.Delete(ctx, r.Id); err != nil {
+		if errors.Is(err, model.AccessDeniedError) {
+			return nil, status.Error(codes.PermissionDenied, err.Error())
+		}
+
+		if errors.Is(err, model.NotFoundError) {
+			return nil, status.Error(codes.NotFound, err.Error())
+		}
+
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
@@ -171,23 +176,13 @@ func (s *Server) DeleteText(ctx context.Context, r *pb.IdRequest) (*pb.SuccessRe
 		Success: true,
 	}, nil
 }
-func (s *Server) FindAllText(ctx context.Context, r *pb.DataRequest) (*pb.TextList, error) {
-	list, err := s.service.FindAllText(ctx)
+func (s *Server) FindAll(ctx context.Context, r *pb.EmptyRequest) (*pb.DataList, error) {
+	list, err := s.service.FindAll(ctx)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &pb.TextList{
+	return &pb.DataList{
 		List: list,
 	}, nil
-}
-
-func (s *Server) AddCard(ctx context.Context, r *pb.CardRequest) (*pb.CardResponse, error) {
-	return &pb.CardResponse{}, nil
-}
-func (s *Server) EditCard(ctx context.Context, r *pb.CardEditRequest) (*pb.CardResponse, error) {
-	return &pb.CardResponse{}, nil
-}
-func (s *Server) DeleteCard(ctx context.Context, r *pb.IdRequest) (*pb.SuccessResponse, error) {
-	return &pb.SuccessResponse{}, nil
 }

@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/rivo/tview"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func (t *TUI) createLoginPage() tview.Primitive {
@@ -33,6 +35,10 @@ func (t *TUI) createLoginPage() tview.Primitive {
 
 		token, err := t.Client.Login(context.Background(), email, password)
 		if err != nil {
+			if status.Code(err) == codes.NotFound {
+				t.showError("Некорректный логин или пароль")
+				return
+			}
 			t.showError(fmt.Sprintf("Ошибка входа: %v", err))
 			return
 		}

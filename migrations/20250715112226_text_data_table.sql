@@ -1,9 +1,9 @@
 -- +goose Up
-CREATE TYPE types AS ENUM('text', 'card', 'byte', 'auth_data');
+CREATE TYPE types AS ENUM('text', 'card', 'byte', 'auth');
 CREATE TABLE data(
     id SERIAL primary key,
     user_id INTEGER DEFAULT NULL,
-    content TEXT DEFAULT NULL,
+    text TEXT DEFAULT NULL,
     type types,
     is_deleted BOOLEAN DEFAULT FALSE,
     uploaded_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -14,3 +14,4 @@ CREATE INDEX IDX_USER_TEXT_DATA ON data (user_Id);
 -- +goose Down
 ALTER TABLE data DROP CONSTRAINT FK_USER_TEXT_DATA;
 DROP TABLE data;
+DROP TYPE types;

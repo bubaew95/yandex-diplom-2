@@ -5,7 +5,7 @@ package grpc
 import (
 	context "context"
 
-	model "github.com/bubaew95/yandex-diplom-2/internal/application/server/model"
+	model "github.com/bubaew95/yandex-diplom-2/internal/model"
 	mock "github.com/stretchr/testify/mock"
 
 	proto "github.com/bubaew95/yandex-diplom-2/internal/proto"
@@ -16,64 +16,8 @@ type MockService struct {
 	mock.Mock
 }
 
-// AddBinary provides a mock function with given fields: ctx, r
-func (_m *MockService) AddBinary(ctx context.Context, r *model.BinaryRequest) (model.BinaryResponse, error) {
-	ret := _m.Called(ctx, r)
-
-	if len(ret) == 0 {
-		panic("no return value specified for AddBinary")
-	}
-
-	var r0 model.BinaryResponse
-	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *model.BinaryRequest) (model.BinaryResponse, error)); ok {
-		return rf(ctx, r)
-	}
-	if rf, ok := ret.Get(0).(func(context.Context, *model.BinaryRequest) model.BinaryResponse); ok {
-		r0 = rf(ctx, r)
-	} else {
-		r0 = ret.Get(0).(model.BinaryResponse)
-	}
-
-	if rf, ok := ret.Get(1).(func(context.Context, *model.BinaryRequest) error); ok {
-		r1 = rf(ctx, r)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// AddCard provides a mock function with given fields: ctx, r
-func (_m *MockService) AddCard(ctx context.Context, r *model.CardRequest) (model.CardResponse, error) {
-	ret := _m.Called(ctx, r)
-
-	if len(ret) == 0 {
-		panic("no return value specified for AddCard")
-	}
-
-	var r0 model.CardResponse
-	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *model.CardRequest) (model.CardResponse, error)); ok {
-		return rf(ctx, r)
-	}
-	if rf, ok := ret.Get(0).(func(context.Context, *model.CardRequest) model.CardResponse); ok {
-		r0 = rf(ctx, r)
-	} else {
-		r0 = ret.Get(0).(model.CardResponse)
-	}
-
-	if rf, ok := ret.Get(1).(func(context.Context, *model.CardRequest) error); ok {
-		r1 = rf(ctx, r)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// AddText provides a mock function with given fields: ctx, r
-func (_m *MockService) AddText(ctx context.Context, r *model.TextRequest) (model.TextResponse, error) {
+// Add provides a mock function with given fields: ctx, r
+func (_m *MockService) Add(ctx context.Context, r *model.Data) (model.TextResponse, error) {
 	ret := _m.Called(ctx, r)
 
 	if len(ret) == 0 {
@@ -82,16 +26,16 @@ func (_m *MockService) AddText(ctx context.Context, r *model.TextRequest) (model
 
 	var r0 model.TextResponse
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *model.TextRequest) (model.TextResponse, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *model.Data) (model.TextResponse, error)); ok {
 		return rf(ctx, r)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, *model.TextRequest) model.TextResponse); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *model.Data) model.TextResponse); ok {
 		r0 = rf(ctx, r)
 	} else {
 		r0 = ret.Get(0).(model.TextResponse)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, *model.TextRequest) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, *model.Data) error); ok {
 		r1 = rf(ctx, r)
 	} else {
 		r1 = ret.Error(1)
@@ -101,22 +45,24 @@ func (_m *MockService) AddText(ctx context.Context, r *model.TextRequest) (model
 }
 
 // AddUser provides a mock function with given fields: ctx, r
-func (_m *MockService) AddUser(ctx context.Context, r *model.RegistrationDTO) (model.RegistrationResponse, error) {
+func (_m *MockService) AddUser(ctx context.Context, r *model.RegistrationDTO) (*model.AuthResponse, error) {
 	ret := _m.Called(ctx, r)
 
 	if len(ret) == 0 {
 		panic("no return value specified for AddUser")
 	}
 
-	var r0 model.RegistrationResponse
+	var r0 *model.AuthResponse
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *model.RegistrationDTO) (model.RegistrationResponse, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *model.RegistrationDTO) (*model.AuthResponse, error)); ok {
 		return rf(ctx, r)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, *model.RegistrationDTO) model.RegistrationResponse); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *model.RegistrationDTO) *model.AuthResponse); ok {
 		r0 = rf(ctx, r)
 	} else {
-		r0 = ret.Get(0).(model.RegistrationResponse)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*model.AuthResponse)
+		}
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, *model.RegistrationDTO) error); ok {
@@ -128,12 +74,12 @@ func (_m *MockService) AddUser(ctx context.Context, r *model.RegistrationDTO) (m
 	return r0, r1
 }
 
-// DeleteCard provides a mock function with given fields: ctx, ID
-func (_m *MockService) DeleteCard(ctx context.Context, ID int64) error {
+// Delete provides a mock function with given fields: ctx, ID
+func (_m *MockService) Delete(ctx context.Context, ID int64) error {
 	ret := _m.Called(ctx, ID)
 
 	if len(ret) == 0 {
-		panic("no return value specified for DeleteCard")
+		panic("no return value specified for Delete")
 	}
 
 	var r0 error
@@ -146,58 +92,12 @@ func (_m *MockService) DeleteCard(ctx context.Context, ID int64) error {
 	return r0
 }
 
-// DeleteText provides a mock function with given fields: ctx, ID
-func (_m *MockService) DeleteText(ctx context.Context, ID int64) error {
-	ret := _m.Called(ctx, ID)
-
-	if len(ret) == 0 {
-		panic("no return value specified for DeleteText")
-	}
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64) error); ok {
-		r0 = rf(ctx, ID)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
-// EditCard provides a mock function with given fields: ctx, r
-func (_m *MockService) EditCard(ctx context.Context, r *model.CardRequest) (model.CardResponse, error) {
+// Edit provides a mock function with given fields: ctx, r
+func (_m *MockService) Edit(ctx context.Context, r *model.TextRequest) (model.TextResponse, error) {
 	ret := _m.Called(ctx, r)
 
 	if len(ret) == 0 {
-		panic("no return value specified for EditCard")
-	}
-
-	var r0 model.CardResponse
-	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *model.CardRequest) (model.CardResponse, error)); ok {
-		return rf(ctx, r)
-	}
-	if rf, ok := ret.Get(0).(func(context.Context, *model.CardRequest) model.CardResponse); ok {
-		r0 = rf(ctx, r)
-	} else {
-		r0 = ret.Get(0).(model.CardResponse)
-	}
-
-	if rf, ok := ret.Get(1).(func(context.Context, *model.CardRequest) error); ok {
-		r1 = rf(ctx, r)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// EditText provides a mock function with given fields: ctx, r
-func (_m *MockService) EditText(ctx context.Context, r *model.TextRequest) (model.TextResponse, error) {
-	ret := _m.Called(ctx, r)
-
-	if len(ret) == 0 {
-		panic("no return value specified for EditText")
+		panic("no return value specified for Edit")
 	}
 
 	var r0 model.TextResponse
@@ -220,24 +120,24 @@ func (_m *MockService) EditText(ctx context.Context, r *model.TextRequest) (mode
 	return r0, r1
 }
 
-// FindAllText provides a mock function with given fields: ctx
-func (_m *MockService) FindAllText(ctx context.Context) ([]*proto.TextResponse, error) {
+// FindAll provides a mock function with given fields: ctx
+func (_m *MockService) FindAll(ctx context.Context) ([]*proto.DataResponse, error) {
 	ret := _m.Called(ctx)
 
 	if len(ret) == 0 {
-		panic("no return value specified for FindAllText")
+		panic("no return value specified for FindAll")
 	}
 
-	var r0 []*proto.TextResponse
+	var r0 []*proto.DataResponse
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context) ([]*proto.TextResponse, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context) ([]*proto.DataResponse, error)); ok {
 		return rf(ctx)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context) []*proto.TextResponse); ok {
+	if rf, ok := ret.Get(0).(func(context.Context) []*proto.DataResponse); ok {
 		r0 = rf(ctx)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*proto.TextResponse)
+			r0 = ret.Get(0).([]*proto.DataResponse)
 		}
 	}
 

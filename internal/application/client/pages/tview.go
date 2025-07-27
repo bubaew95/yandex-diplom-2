@@ -22,15 +22,10 @@ const (
 	nameColumn    = 2
 	updatedColumn = 3
 
-	dataTypeLoginPass = "Логин/Пароль" // #nosec G101
+	dataTypeLoginPass = "Логин/Пароль"
 	dataTypeText      = "Текст"
 	dataTypeCard      = "Карта"
 	dataTypeFile      = "Файл"
-
-	dialogWidth  = 60
-	dialogHeight = 15
-
-	passwordFieldWidth = 30
 
 	syncIntervalSeconds = 15
 
@@ -41,10 +36,11 @@ const (
 )
 
 type Data struct {
-	dataList    []*pb.TextResponse
-	setViewData func(data model.TextResponse)
-	updateTable func()
-	dataTable   *tview.Table
+	dataList          []*pb.DataResponse
+	setViewData       func(data model.TextResponse)
+	updateTable       func()
+	dataTable         *tview.Table
+	lastFileDialogDir string
 }
 
 type TUI struct {
@@ -112,52 +108,6 @@ func (t *TUI) initPages() {
 	t.Pages.AddPage("login", t.createLoginPage(), true, true)
 	t.Pages.AddPage("register", t.createRegisterPage(), true, false)
 	t.Pages.AddPage("main", t.createMainPage(), true, false)
-	//t.Pages.AddPage("add", t.createAddPage(), true, false)
-	//t.Pages.AddPage("view", t.createViewPage(), true, false)
-}
-
-//
-//func (t *TUI) getDataTypeLabel(dataType models.DataType) string {
-//	switch dataType {
-//	case models.LoginPassword:
-//		return dataTypeLoginPass
-//	case models.TextData:
-//		return dataTypeText
-//	case models.CardData:
-//		return dataTypeCard
-//	case models.BinaryData:
-//		return dataTypeFile
-//	default:
-//		return string(dataType)
-//	}
-//}
-
-func formatTime(t time.Time) string {
-	return t.Format("2006-01-02 15:04")
-}
-
-func (t *TUI) showError(message string) {
-	t.showDialog("Ошибка", message, "OK", nil)
-}
-
-func (t *TUI) showInfo(message string) {
-	t.showDialog("Информация", message, "OK", nil)
-}
-
-func (t *TUI) showDialog(title, message, buttonText string, callback func()) {
-	modal := tview.NewModal().
-		SetText(message).
-		AddButtons([]string{buttonText}).
-		SetDoneFunc(func(buttonIndex int, _ string) {
-			if buttonIndex == 0 && callback != nil {
-				callback()
-			}
-			t.Pages.RemovePage("dialog")
-		})
-
-	if title != "" {
-		modal.SetTitle(title).SetBorder(true)
-	}
-
-	t.Pages.AddPage("dialog", modal, true, true)
+	t.Pages.AddPage("add", t.createAddPage(nil, nil), true, false)
+	t.Pages.AddPage("edit", t.createAddPage(nil, nil), true, false)
 }

@@ -2,9 +2,13 @@ package pages
 
 import (
 	"context"
+	"encoding/json"
+	"github.com/bubaew95/yandex-diplom-2/internal/model"
 	pb "github.com/bubaew95/yandex-diplom-2/internal/proto"
+	"github.com/bubaew95/yandex-diplom-2/pkg/crypto"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
+	"path/filepath"
 	"strconv"
 )
 
@@ -34,30 +38,58 @@ func (t *TUI) createMainPage() tview.Primitive {
 	t.Data.updateTable = func() {
 		t.updateDataTable(t.Data.dataList)
 	}
-	//
-	//createViewPageForData := func(data models.DataResponse) {
-	//	t.createViewPageForData(data)
-	//}
-	//
-	//table.SetSelectedFunc(func(row, _ int) {
-	//	if row > 0 && row <= len(t.dataList) {
-	//		data := t.dataList[row-1]
-	//		createViewPageForData(data)
-	//	}
-	//})
-	//
+
 	form := tview.NewForm()
 	form.AddButton("Добавить", func() {
 		t.Pages.SwitchToPage("add")
 	})
-	form.AddButton("Просмотр", func() {
-		//if row, _ := table.GetSelection(); row > 0 && row <= len(t.dataList) {
-		//	data := t.dataList[row-1]
-		//	createViewPageForData(data)
-		//}
+
+	form.AddButton("Изменить", func() {
+		if row, _ := table.GetSelection(); row > 0 && row <= len(t.Data.dataList) {
+			data := t.Data.dataList[row-1]
+
+			t.Pages.AddAndSwitchToPage("edit", t.createAddPage(&data.Id, &model.Data{
+				Text: data.Text,
+				Type: model.DataType(data.Type),
+			}), true)
+		}
 	})
+
+	form.AddButton("Удалить", func() {
+		if row, _ := table.GetSelection(); row > 0 && row <= len(t.Data.dataList) {
+			data := t.Data.dataList[row-1]
+
+			t.showDialog(Dialog{
+				Title:       "Предупреждение",
+				Message:     "Подтверждаете удаление?",
+				BtnPositive: "Подтверждаю",
+				Positive: func() {
+					res, err := t.Client.Delete(context.Background(), &pb.IdRequest{Id: data.Id})
+					if err != nil {
+						t.showError(err.Error())
+					}
+
+					if res {
+						t.loadData()
+						t.startAutoSync()
+					}
+				},
+				BtnNegative: "Отмена",
+				Negative: func() {
+					return
+				},
+			})
+		}
+	})
+
 	form.AddButton("Выход", func() {
-		//t.logout()
+		t.stopAutoSync()
+		t.Client.State.Token = ""
+		t.Client.State.User = model.User{}
+
+		t.Data.dataList = nil
+
+		t.Pages.SwitchToPage("login")
 	})
 
 	buttonsLayout := tview.NewFlex().
@@ -75,7 +107,7 @@ func (t *TUI) createMainPage() tview.Primitive {
 func (t *TUI) loadData() {
 	data, err := t.Client.GetAllData(context.Background())
 	if err != nil {
-		panic(err)
+		return
 	}
 
 	t.Data.dataList = data.List
@@ -85,24 +117,47 @@ func (t *TUI) loadData() {
 	}
 }
 
-func (t *TUI) updateDataTable(data []*pb.TextResponse) {
+func (t *TUI) updateDataTable(data []*pb.DataResponse) {
 	table := t.Data.dataTable
 	table.Clear()
 
 	table.SetCell(0, idColumn, tview.NewTableCell("ID").SetTextColor(tcell.ColorYellow).SetSelectable(false))
 	table.SetCell(0, typeColumn, tview.NewTableCell("Тип").SetTextColor(tcell.ColorYellow).SetSelectable(false))
 	table.SetCell(0, nameColumn, tview.NewTableCell("Название").SetTextColor(tcell.ColorYellow).SetSelectable(false))
-	table.SetCell(
-		0,
-		updatedColumn,
-		tview.NewTableCell("Обновлено").SetTextColor(tcell.ColorYellow).SetSelectable(false),
-	)
 
 	for i, item := range data {
 		row := i + 1
 		table.SetCell(row, idColumn, tview.NewTableCell(strconv.FormatInt(item.Id, 10)))
-		//table.SetCell(row, typeColumn, tview.NewTableCell(t.getDataTypeLabel(item.Type)))
-		table.SetCell(row, nameColumn, tview.NewTableCell(item.Text))
-		//table.SetCell(row, updatedColumn, tview.NewTableCell(formatTime(item.UpdatedAt)))
+		table.SetCell(row, typeColumn, tview.NewTableCell(t.getDataTypeLabel(model.DataType(item.Type))))
+
+		decodeText, err := crypto.DecodeHash(item.Text)
+		if err != nil {
+			decodeText = item.Text
+		}
+
+		if model.DataType(item.Type) == model.BinaryData {
+			var binaryData model.BinaryDataContent
+			if err := json.Unmarshal([]byte(decodeText), &binaryData); err != nil {
+				decodeText = "Бинарный файл"
+			}
+
+			decodeText = filepath.Base(binaryData.FileName)
+		}
+
+		table.SetCell(row, nameColumn, tview.NewTableCell(decodeText))
+	}
+}
+func (t *TUI) getDataTypeLabel(dataType model.DataType) string {
+	switch dataType {
+	case model.LoginPassword:
+		return dataTypeLoginPass
+	case model.TextData:
+		return dataTypeText
+	case model.CardData:
+		return dataTypeCard
+	case model.BinaryData:
+		return dataTypeFile
+	default:
+		return string(dataType)
 	}
 }
