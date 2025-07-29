@@ -17,11 +17,12 @@ import (
 
 func init() {
 	if err := logger.Load(); err != nil {
-		log.Fatal(err)
+		log.Fatalf("Loading logger failed")
+		return
 	}
 
 	if err := godotenv.Load(); err != nil {
-		logger.Log.Fatal("No .env file found")
+		logger.Log.Debug("No .env file found")
 	}
 }
 

@@ -105,7 +105,7 @@ func (t *TUI) Run() error {
 		t.Pages.SwitchToPage("main")
 	}
 
-	return t.App.SetRoot(t.Pages, true).EnableMouse(true).Run()
+	return t.App.SetRoot(t.Pages, true).SetFocus(t.Pages).EnableMouse(true).Run()
 }
 
 // Stop завершает работу приложения и останавливает таймер автообновления.

@@ -45,7 +45,6 @@ func NewServer(srv grpcServer.Service, cfg config.Config) HTTPServer {
 
 // Start запускает gRPC-сервер на указанном порту из конфигурации.
 //
-// В случае ошибки логгирует и завершает выполнение через logger.Log.Fatal.
 // Использует LoginInterceptor для авторизации.
 func (s *httpServer) Start() {
 	s.server = s.listenGRPC()

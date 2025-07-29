@@ -1,11 +1,17 @@
 package main
 
 import (
+	"fmt"
 	"github.com/bubaew95/yandex-diplom-2/config"
 	"github.com/bubaew95/yandex-diplom-2/internal/application/client/pages"
 	"github.com/bubaew95/yandex-diplom-2/internal/logger"
 	"github.com/joho/godotenv"
 	"log"
+)
+
+var (
+	version   string = "0.1"
+	buildDate string
 )
 
 func init() {
@@ -19,6 +25,8 @@ func init() {
 }
 
 func main() {
+	fmt.Printf("Версия: %s\nДата сборки: %s\n", version, buildDate)
+
 	cfg := config.NewConfig()
 	tui, err := pages.NewTUI(cfg)
 	if err != nil {
