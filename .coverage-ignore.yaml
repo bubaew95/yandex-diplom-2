@@ -1,0 +1,4 @@
+module: "github.com/bubaew95/yandex-go-learn"
+ignore_rules:
+  - ".*\\.pb\\.go"
+  - ".*_mock\\.go"

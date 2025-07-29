@@ -17,6 +17,17 @@ const (
 	buttonAreaHeight = 3
 )
 
+// createMainPage создаёт главную страницу приложения с таблицей данных пользователя.
+//
+// Элементы страницы:
+//   - таблица с данными (ID, тип, название, дата обновления);
+//   - кнопки: "Добавить", "Изменить", "Удалить", "Выход".
+//
+// Кнопки выполняют соответствующие действия:
+//   - "Добавить" — переход на форму добавления;
+//   - "Изменить" — переход на форму редактирования выбранной строки;
+//   - "Удалить" — подтверждение и удаление выбранного элемента через gRPC;
+//   - "Выход" — очистка состояния клиента и переход к экрану входа.
 func (t *TUI) createMainPage() tview.Primitive {
 	flex := tview.NewFlex().SetDirection(tview.FlexRow)
 	flex.SetTitle("GophKeeper - Данные").SetBorder(true)
@@ -104,6 +115,8 @@ func (t *TUI) createMainPage() tview.Primitive {
 	return flex
 }
 
+// loadData загружает все данные пользователя с сервера через gRPC,
+// сохраняет результат в t.Data.dataList и обновляет таблицу, если задана функция updateTable.
 func (t *TUI) loadData() {
 	data, err := t.Client.GetAllData(context.Background())
 	if err != nil {
@@ -117,6 +130,10 @@ func (t *TUI) loadData() {
 	}
 }
 
+// updateDataTable обновляет содержимое таблицы на главной странице,
+// заполняя её строками из переданного списка данных.
+//
+// Для бинарных данных в поле названия отображается имя файла (без пути).
 func (t *TUI) updateDataTable(data []*pb.DataResponse) {
 	table := t.Data.dataTable
 	table.Clear()
@@ -147,6 +164,8 @@ func (t *TUI) updateDataTable(data []*pb.DataResponse) {
 		table.SetCell(row, nameColumn, tview.NewTableCell(decodeText))
 	}
 }
+
+// getDataTypeLabel возвращает человеко-читаемую строку, соответствующую типу данных.
 func (t *TUI) getDataTypeLabel(dataType model.DataType) string {
 	switch dataType {
 	case model.LoginPassword:

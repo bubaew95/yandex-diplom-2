@@ -9,6 +9,18 @@ import (
 	"strings"
 )
 
+// Dialog описывает параметры модального окна, отображаемого в интерфейсе TUI.
+//
+// Используется функцией showDialog для создания окна с настраиваемым сообщением,
+// заголовком и двумя кнопками (положительной и отрицательной).
+//
+// Поля:
+//   - Title: Заголовок окна (опционально).
+//   - Message: Основной текст сообщения.
+//   - BtnPositive: Подпись для кнопки подтверждения (например, "ОК").
+//   - BtnNegative: Подпись для кнопки отмены (например, "Отмена").
+//   - Positive: Callback-функция, вызываемая при нажатии кнопки BtnPositive.
+//   - Negative: Callback-функция, вызываемая при нажатии кнопки BtnNegative.
 type Dialog struct {
 	Title       string
 	Message     string
@@ -18,18 +30,24 @@ type Dialog struct {
 	Negative    func()
 }
 
+// showError отображает диалог с сообщением об ошибке.
+// Используется для унифицированного вывода ошибок пользователю.
 func (t *TUI) showError(message string) {
 	t.showDialog(Dialog{
 		Title: "Ошибка", Message: message, BtnPositive: "OK",
 	})
 }
 
+// showInfo отображает информационный диалог с сообщением.
+// Используется для уведомлений без пользовательского выбора.
 func (t *TUI) showInfo(message string) {
 	t.showDialog(Dialog{
 		Title: "Информация", Message: message, BtnPositive: "OK",
 	})
 }
 
+// showDialog отображает модальное окно с настраиваемым заголовком, сообщением и кнопками.
+// Обрабатывает подтверждение и отмену через заданные функции.
 func (t *TUI) showDialog(d Dialog) {
 	modal := tview.NewModal().
 		SetText(d.Message).
@@ -53,6 +71,9 @@ func (t *TUI) showDialog(d Dialog) {
 	t.Pages.AddPage("dialog", modal, true, true)
 }
 
+// createList возвращает список файлов и директорий для заданного пути.
+// Позволяет навигировать по папкам, выбирая директории или файлы.
+// Если onlyDirs = true — отображаются только папки.
 func (t *TUI) createList(
 	dir string,
 	pageName string,
@@ -93,6 +114,9 @@ func (t *TUI) createList(
 	return list
 }
 
+// createDialogForm создаёт форму с полем ввода и кнопками подтверждения/отмены,
+// а также дополнительными кнопками (если заданы).
+// Возвращает саму форму и ссылку на поле ввода.
 func (t *TUI) createDialogForm(
 	label string,
 	initialText string,
@@ -124,6 +148,9 @@ func (t *TUI) createDialogForm(
 	return form, input
 }
 
+// showDirDialog отображает модальное окно выбора файла или директории.
+// Поддерживает навигацию, создание новых директорий и передачу выбранного пути через callback.
+// Название окна задаётся параметром title.
 func (t *TUI) showDirDialog(
 	pageName string,
 	title string,
@@ -170,6 +197,8 @@ func (t *TUI) showDirDialog(
 	updateList(dir)
 }
 
+// showFileDialog открывает диалог выбора файла и возвращает путь к нему через callback.
+// Используется для загрузки бинарных данных.
 func (t *TUI) showFileDialog(callback func(string)) {
 	dir, err := t.getInitialDirectory()
 	if err != nil {
@@ -179,6 +208,8 @@ func (t *TUI) showFileDialog(callback func(string)) {
 	t.showDirDialog("file_dialog", "Выберите файл", dir, false, callback, nil)
 }
 
+// showFileDialogForDir открывает диалог выбора директории с возможностью её создания.
+// Вызывает callback при выборе или создании директории.
 func (t *TUI) showFileDialogForDir(callback func(string)) {
 	dir, err := t.getInitialDirectory()
 	if err != nil {
@@ -202,6 +233,8 @@ func (t *TUI) showFileDialogForDir(callback func(string)) {
 	t.showDirDialog("file_dialog_dir", "Выберите директорию", dir, true, callback, extra)
 }
 
+// getInitialDirectory возвращает путь, который будет использоваться как начальный при открытии файлового диалога.
+// Предпочтение отдаётся последней директории, выбранной пользователем.
 func (t *TUI) getInitialDirectory() (string, error) {
 	if t.Data.lastFileDialogDir != "" {
 		return t.Data.lastFileDialogDir, nil

@@ -1,61 +1,79 @@
 package model
 
+// DataType определяет тип хранимых данных пользователя.
 type DataType string
 
 const (
+	// LoginPassword представляет логин и пароль (auth-пара).
 	LoginPassword DataType = "auth"
-	TextData      DataType = "text"
-	BinaryData    DataType = "byte"
-	CardData      DataType = "card"
+
+	// TextData представляет обычный текст (заметки и т.п.).
+	TextData DataType = "text"
+
+	// BinaryData представляет бинарные данные (файлы).
+	BinaryData DataType = "byte"
+
+	// CardData представляет данные банковской карты.
+	CardData DataType = "card"
 )
 
+// Data — общая структура данных, сохраняемая пользователем.
+// Хранит зашифрованный текст и тип этих данных.
 type Data struct {
-	Text string   `json:"text"`
-	Type DataType `json:"type"`
+	Text string   `json:"text"` // Зашифрованное содержимое
+	Type DataType `json:"type"` // Тип данных
 }
 
+// BinaryRequest используется для загрузки бинарных данных.
 type BinaryRequest struct {
-	Binary []byte `json:"binary"`
+	Binary []byte `json:"binary"` // Массив байт файла
 }
 
+// BinaryResponse представляет сохранённый бинарный файл.
 type BinaryResponse struct {
-	ID     int64  `json:"id"`
-	Binary []byte `json:"binary"`
-	UserID int64  `json:"user_id"`
+	ID     int64  `json:"id"`      // ID записи
+	Binary []byte `json:"binary"`  // Содержимое файла
+	UserID int64  `json:"user_id"` // ID пользователя
 }
 
+// CardResponse представляет сохранённую карту в базе или ответе.
 type CardResponse struct {
-	ID        int64  `json:"id"`
-	Number    string `json:"number"`
-	UserID    int64  `json:"user_id"`
-	IsDeleted bool   `json:"is_deleted,omitempty"`
+	ID        int64  `json:"id"`                   // ID записи
+	Number    string `json:"number"`               // Маскированный номер карты
+	UserID    int64  `json:"user_id"`              // ID пользователя
+	IsDeleted bool   `json:"is_deleted,omitempty"` // Флаг логического удаления
 }
 
+// TextRequest используется для запроса на обновление текста по ID.
 type TextRequest struct {
-	ID   int64  `json:"id,omitempty"`
-	Text string `json:"text"`
+	ID   int64  `json:"id,omitempty"` // ID редактируемой записи
+	Text string `json:"text"`         // Новое значение текста
 }
 
+// TextResponse представляет текстовую запись, возвращаемую пользователю.
 type TextResponse struct {
-	ID        int64  `json:"id"`
-	Text      string `json:"text"`
-	UserID    int64  `json:"user_id"`
-	IsDeleted bool   `json:"is_deleted,omitempty"`
+	ID        int64  `json:"id"`                   // ID записи
+	Text      string `json:"text"`                 // Содержимое
+	UserID    int64  `json:"user_id"`              // ID владельца
+	IsDeleted bool   `json:"is_deleted,omitempty"` // Флаг логического удаления
 }
 
+// LoginRequest содержит логин и пароль для хранения или отображения.
 type LoginRequest struct {
-	Login    string `json:"login"`
-	Password string `json:"password"`
+	Login    string `json:"login"`    // Логин (email, имя и т.д.)
+	Password string `json:"password"` // Пароль (в открытом виде)
 }
 
+// CardDataContent содержит реквизиты банковской карты.
 type CardDataContent struct {
-	CardNumber string `json:"number"`
-	CardHolder string `json:"holder"`
-	ExpiryDate string `json:"expiry_date"`
-	CVV        string `json:"cvv"`
+	CardNumber string `json:"number"`      // Номер карты
+	CardHolder string `json:"holder"`      // Имя владельца
+	ExpiryDate string `json:"expiry_date"` // Срок действия (MM/YY)
+	CVV        string `json:"cvv"`         // Код безопасности
 }
 
+// BinaryDataContent содержит путь к файлу и его содержимое (бинарное).
 type BinaryDataContent struct {
-	FileName string `json:"file_name"`
-	Data     []byte `json:"data"`
+	FileName string `json:"file_name"` // Имя файла
+	Data     []byte `json:"data"`      // Содержимое файла
 }

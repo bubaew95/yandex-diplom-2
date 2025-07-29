@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"github.com/bubaew95/yandex-diplom-2/config"
 	"github.com/bubaew95/yandex-diplom-2/internal/logger"
 	"github.com/bubaew95/yandex-diplom-2/internal/model"
@@ -12,6 +13,12 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// Repository описывает интерфейс взаимодействия с уровнем хранения данных,
+// реализуемый в пакете repository.
+//
+// Используется сервисом для выполнения операций без привязки к конкретной БД.
+//
+//go:generate go run github.com/vektra/mockery/v2@v2.52.2 --name=Repository --filename=repositoryemock_test.go --inpackage
 type Repository interface {
 	CreateUser(ctx context.Context, r *model.RegistrationDTO) (int64, error)
 	GetUserByEmail(ctx context.Context, email string) (bool, error)
@@ -23,15 +30,25 @@ type Repository interface {
 	FindAll(ctx context.Context, userID int64) ([]*pb.DataResponse, error)
 }
 
+// Service реализует бизнес-логику GophKeeper, включая регистрацию, аутентификацию,
+// а также операции над данными (создание, редактирование, удаление, получение).
 type Service struct {
-	repo Repository
-	cfg  config.Config
+	repo Repository    // реализация слоя доступа к данным
+	cfg  config.Config // конфигурация приложения
 }
 
+// NewService создаёт новый экземпляр Service на основе переданного репозитория и конфигурации.
 func NewService(repo Repository, cfg config.Config) *Service {
 	return &Service{repo: repo, cfg: cfg}
 }
 
+// AddUser регистрирует нового пользователя.
+//
+// Выполняется:
+//   - проверка совпадения паролей,
+//   - хеширование пароля,
+//   - сохранение пользователя,
+//   - генерация JWT-токена.
 func (s Service) AddUser(ctx context.Context, r *model.RegistrationDTO) (*model.AuthResponse, error) {
 	if r.Password != r.RePassword {
 		return nil, model.PasswordNotMatchError
@@ -64,6 +81,13 @@ func (s Service) AddUser(ctx context.Context, r *model.RegistrationDTO) (*model.
 		Token: jwt,
 	}, nil
 }
+
+// Login выполняет вход по email и паролю.
+//
+// Производит:
+//   - поиск пользователя,
+//   - сравнение хеша пароля,
+//   - генерацию токена.
 func (s Service) Login(ctx context.Context, r *model.LoginDTO) (model.AuthResponse, error) {
 	user, err := s.repo.FindUserByEmail(ctx, r)
 	if err != nil {
@@ -86,8 +110,13 @@ func (s Service) Login(ctx context.Context, r *model.LoginDTO) (model.AuthRespon
 	}, nil
 }
 
+// Add сохраняет новую запись данных от имени текущего пользователя.
 func (s Service) Add(ctx context.Context, r *model.Data) (model.TextResponse, error) {
-	user := ctx.Value(crypto.KeyUser).(model.User)
+	userVal := ctx.Value(crypto.KeyUser)
+	user, ok := userVal.(model.User)
+	if !ok {
+		return model.TextResponse{}, errors.New("user value not found in context")
+	}
 
 	dataID, err := s.repo.AddText(ctx, r, user.ID)
 	if err != nil {
@@ -101,8 +130,13 @@ func (s Service) Add(ctx context.Context, r *model.Data) (model.TextResponse, er
 	}, nil
 }
 
+// Edit обновляет запись данных, принадлежащую текущему пользователю.
 func (s Service) Edit(ctx context.Context, r *model.TextRequest) (model.TextResponse, error) {
-	user := ctx.Value(crypto.KeyUser).(model.User)
+	userVal := ctx.Value(crypto.KeyUser)
+	user, ok := userVal.(model.User)
+	if !ok {
+		return model.TextResponse{}, errors.New("user value not found in context")
+	}
 
 	_, err := s.repo.Edit(ctx, r, user.ID)
 	if err != nil {
@@ -116,14 +150,24 @@ func (s Service) Edit(ctx context.Context, r *model.TextRequest) (model.TextResp
 	}, nil
 }
 
+// Delete логически удаляет запись по ID от имени текущего пользователя.
 func (s Service) Delete(ctx context.Context, ID int64) error {
-	user := ctx.Value(crypto.KeyUser).(model.User)
+	userVal := ctx.Value(crypto.KeyUser)
+	user, ok := userVal.(model.User)
+	if !ok {
+		return errors.New("user value not found in context")
+	}
 
 	return s.repo.Delete(ctx, user.ID, ID)
 }
 
+// FindAll возвращает все активные (неудалённые) записи текущего пользователя.
 func (s Service) FindAll(ctx context.Context) ([]*pb.DataResponse, error) {
-	user := ctx.Value(crypto.KeyUser).(model.User)
+	userVal := ctx.Value(crypto.KeyUser)
+	user, ok := userVal.(model.User)
+	if !ok {
+		return nil, errors.New("user value not found in context")
+	}
 
 	return s.repo.FindAll(ctx, user.ID)
 }

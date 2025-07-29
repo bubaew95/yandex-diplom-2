@@ -8,14 +8,25 @@ import (
 	"time"
 )
 
+// Claims представляет JWT-полезную нагрузку (payload), содержащую:
+// - стандартные claims (exp, iat, и т.п.),
+// - информацию о пользователе.
 type Claims struct {
-	jwt.RegisteredClaims
-	User model.User
+	jwt.RegisteredClaims            // Встроенные поля: ExpiresAt, IssuedAt, и т.п.
+	User                 model.User // Пользовательские данные (структура User)
 }
 
+// TokenExp задаёт срок действия JWT-токена: 3 часа.
 const TokenExp = time.Hour * 3
+
+// SecretKey используется для подписи и проверки JWT-токенов.
 const SecretKey = "sdgsg!35$#%TSGsdhdfhsd436093598!@$#%"
 
+// EncodeJWTToken генерирует JWT-токен для заданного пользователя.
+//
+// Токен содержит:
+//   - поле `User` со всей структурой model.User,
+//   - срок действия (ExpiresAt).
 func EncodeJWTToken(user model.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, Claims{
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -32,6 +43,11 @@ func EncodeJWTToken(user model.User) (string, error) {
 	return tokenString, nil
 }
 
+// DecodeJWTToken парсит и проверяет JWT-токен, извлекая пользователя.
+//
+// Возвращает:
+//   - model.User — если токен валиден,
+//   - error — если токен невалиден или подпись некорректна.
 func DecodeJWTToken(tokenString string) (model.User, error) {
 	claims := &Claims{}
 

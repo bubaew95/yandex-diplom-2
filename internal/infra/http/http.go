@@ -11,11 +11,19 @@ import (
 	"net"
 )
 
+// HTTPServer описывает интерфейс управления сервером (запуск и остановка).
 type HTTPServer interface {
-	Start()
-	Stop()
+	Start() // Запускает gRPC-сервер
+	Stop()  // Останавливает gRPC-сервер
 }
 
+// httpServer представляет реализацию gRPC-сервера с авторизационным интерсептором.
+//
+// Хранит:
+//   - config: настройки (порт),
+//   - srv: реализация бизнес-логики (service-layer),
+//   - server: экземпляр gRPC-сервера,
+//   - chError: канал для передачи ошибок запуска.
 type httpServer struct {
 	server  *grpc.Server
 	config  config.Config
@@ -23,6 +31,10 @@ type httpServer struct {
 	chError chan string
 }
 
+// NewServer создаёт и возвращает новый экземпляр httpServer,
+// инициализируя зависимости и конфигурацию.
+//
+// Используется как точка входа для старта gRPC-сервера.
 func NewServer(srv grpcServer.Service, cfg config.Config) HTTPServer {
 	return &httpServer{
 		config:  cfg,
@@ -31,6 +43,10 @@ func NewServer(srv grpcServer.Service, cfg config.Config) HTTPServer {
 	}
 }
 
+// Start запускает gRPC-сервер на указанном порту из конфигурации.
+//
+// В случае ошибки логгирует и завершает выполнение через logger.Log.Fatal.
+// Использует LoginInterceptor для авторизации.
 func (s *httpServer) Start() {
 	s.server = s.listenGRPC()
 
@@ -42,6 +58,10 @@ func (s *httpServer) Start() {
 	}
 }
 
+// listenGRPC инициализирует gRPC-сервер, настраивает слушателя,
+// регистрирует сервер GoKeeper и запускает `Serve()`.
+//
+// Ошибки передаются в канал s.chError.
 func (s *httpServer) listenGRPC() *grpc.Server {
 	listener, err := net.Listen("tcp", ":"+s.config.Port)
 	if err != nil {
@@ -59,6 +79,7 @@ func (s *httpServer) listenGRPC() *grpc.Server {
 	return server
 }
 
+// Stop корректно останавливает gRPC-сервер.
 func (s *httpServer) Stop() {
 	logger.Log.Info("Stopping grpc server")
 	s.server.Stop()

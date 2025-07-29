@@ -35,6 +35,13 @@ const (
 	formSidePadding  = 20
 )
 
+// Data содержит отображаемые и служебные данные TUI-интерфейса.
+//
+// Используется для хранения:
+//   - списка полученных данных,
+//   - таблицы отображения,
+//   - текущей директории в файловом диалоге,
+//   - функции обновления таблицы.
 type Data struct {
 	dataList          []*pb.DataResponse
 	setViewData       func(data model.TextResponse)
@@ -43,6 +50,16 @@ type Data struct {
 	lastFileDialogDir string
 }
 
+// TUI представляет структуру текстового пользовательского интерфейса (TUI),
+// основанную на библиотеке tview.
+//
+// Содержит:
+//   - App: основное приложение tview,
+//   - Pages: набор страниц (экраны: вход, регистрация, основная, и т.п.),
+//   - Config: конфигурация приложения,
+//   - Client: gRPC клиент,
+//   - SyncTimer: таймер для автообновления данных,
+//   - Data: состояние отображаемых пользовательских данных.
 type TUI struct {
 	App       *tview.Application
 	Pages     *tview.Pages
@@ -52,6 +69,8 @@ type TUI struct {
 	Data      Data
 }
 
+// NewTUI создаёт и инициализирует новый экземпляр TUI на основе переданной конфигурации.
+// Возвращает объект TUI или ошибку при инициализации gRPC клиента.
 func NewTUI(cfg *config.Config) (*TUI, error) {
 	tui := &TUI{
 		App:    tview.NewApplication(),
@@ -69,6 +88,12 @@ func NewTUI(cfg *config.Config) (*TUI, error) {
 	return tui, nil
 }
 
+// Run запускает TUI-приложение.
+//
+// Поведение:
+//   - если токен отсутствует, загружается страница входа,
+//   - если токен уже есть, сразу переход на главную страницу,
+//     с предварительной загрузкой данных и запуском авто-синхронизации.
 func (t *TUI) Run() error {
 	t.initPages()
 
@@ -83,11 +108,14 @@ func (t *TUI) Run() error {
 	return t.App.SetRoot(t.Pages, true).EnableMouse(true).Run()
 }
 
+// Stop завершает работу приложения и останавливает таймер автообновления.
 func (t *TUI) Stop() {
 	t.stopAutoSync()
 	t.App.Stop()
 }
 
+// startAutoSync запускает фоновую периодическую синхронизацию данных
+// с интервалом `syncIntervalSeconds`, используя time.AfterFunc.
 func (t *TUI) startAutoSync() {
 	t.SyncTimer = time.AfterFunc(syncIntervalSeconds*time.Second, func() {
 		t.App.QueueUpdateDraw(func() {
@@ -97,6 +125,7 @@ func (t *TUI) startAutoSync() {
 	})
 }
 
+// stopAutoSync останавливает таймер автообновления данных, если он был активен.
 func (t *TUI) stopAutoSync() {
 	if t.SyncTimer != nil {
 		t.SyncTimer.Stop()
@@ -104,6 +133,8 @@ func (t *TUI) stopAutoSync() {
 	}
 }
 
+// initPages инициализирует все страницы интерфейса:
+// "login", "register", "main", "add", "edit" — и добавляет их в Pages.
 func (t *TUI) initPages() {
 	t.Pages.AddPage("login", t.createLoginPage(), true, true)
 	t.Pages.AddPage("register", t.createRegisterPage(), true, false)

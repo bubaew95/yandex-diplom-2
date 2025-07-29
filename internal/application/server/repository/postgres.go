@@ -12,14 +12,19 @@ import (
 	"go.uber.org/zap"
 )
 
+// Repository реализует доступ к данным через PostgreSQL,
+// используя обёртку infra.DataBase и стандартный sql.DB.
 type Repository struct {
 	db *infra.DataBase
 }
 
+// NewRepository создаёт новый экземпляр хранилища (репозитория)
+// с использованием переданного соединения к базе данных.
 func NewRepository(db *infra.DataBase) *Repository {
 	return &Repository{db: db}
 }
 
+// CreateUser сохраняет нового пользователя в базе данных.
 func (s *Repository) CreateUser(ctx context.Context, r *model.RegistrationDTO) (int64, error) {
 	isUser, err := s.GetUserByEmail(ctx, r.Email)
 	if err != nil {
@@ -39,6 +44,8 @@ func (s *Repository) CreateUser(ctx context.Context, r *model.RegistrationDTO) (
 
 	return id, nil
 }
+
+// GetUserByEmail проверяет наличие пользователя по email.
 func (s *Repository) GetUserByEmail(ctx context.Context, email string) (bool, error) {
 	var id int64
 
@@ -55,6 +62,8 @@ func (s *Repository) GetUserByEmail(ctx context.Context, email string) (bool, er
 
 	return true, nil
 }
+
+// FindUserByEmail извлекает полные данные пользователя по email.
 func (s *Repository) FindUserByEmail(ctx context.Context, r *model.LoginDTO) (model.User, error) {
 	var user model.User
 	sqlQuery := `SELECT id, email, first_name, last_name, password FROM users WHERE email = $1`
@@ -71,8 +80,7 @@ func (s *Repository) FindUserByEmail(ctx context.Context, r *model.LoginDTO) (mo
 	return user, nil
 }
 
-//Text table
-
+// AddText добавляет новую запись данных (шифрованный текст) в таблицу data.
 func (s *Repository) AddText(ctx context.Context, r *model.Data, userID int64) (int64, error) {
 	sqlQuery := `INSERT INTO data (text, user_id, type) VALUES ($1, $2, $3) RETURNING id`
 	var id int64
@@ -84,6 +92,9 @@ func (s *Repository) AddText(ctx context.Context, r *model.Data, userID int64) (
 
 	return id, nil
 }
+
+// Edit обновляет текст записи по ID, если он принадлежит указанному пользователю.
+// Проверяет права доступа и изменённость содержимого.
 func (s *Repository) Edit(ctx context.Context, r *model.TextRequest, userID int64) (int64, error) {
 	data, err := s.GetText(ctx, r.ID)
 	if err != nil {
@@ -105,6 +116,8 @@ func (s *Repository) Edit(ctx context.Context, r *model.TextRequest, userID int6
 
 	return r.ID, nil
 }
+
+// Delete логически удаляет запись (soft delete), устанавливая is_deleted = true.
 func (s *Repository) Delete(ctx context.Context, userID int64, ID int64) error {
 	textData, err := s.GetText(ctx, ID)
 	if err != nil {
@@ -125,6 +138,8 @@ func (s *Repository) Delete(ctx context.Context, userID int64, ID int64) error {
 	}
 	return nil
 }
+
+// GetText возвращает запись по ID (включая флаг is_deleted).
 func (s *Repository) GetText(ctx context.Context, ID int64) (model.TextResponse, error) {
 	var text model.TextResponse
 
@@ -136,6 +151,8 @@ func (s *Repository) GetText(ctx context.Context, ID int64) (model.TextResponse,
 
 	return text, nil
 }
+
+// FindAll возвращает все записи пользователя, у которых is_deleted = false.
 func (s *Repository) FindAll(ctx context.Context, userID int64) ([]*pb.DataResponse, error) {
 	sqlQuery := `SELECT id, text, type, user_id, is_deleted FROM data WHERE user_id = $1 AND is_deleted = false ORDER BY id DESC`
 	rows, err := s.db.QueryContext(ctx, sqlQuery, userID)

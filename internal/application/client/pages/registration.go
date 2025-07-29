@@ -10,6 +10,23 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+// createRegisterPage создаёт форму регистрации нового пользователя в TUI-интерфейсе.
+//
+// Форма включает следующие поля:
+//   - Фамилия,
+//   - Имя,
+//   - E-mail,
+//   - Пароль,
+//   - Подтверждение пароля.
+//
+// Кнопки формы:
+//   - "Зарегистрироваться" — выполняет валидацию данных и отправляет запрос на регистрацию через gRPC.
+//     В случае успешной регистрации сохраняется токен, загружаются пользовательские данные,
+//     запускается авто-синхронизация и происходит переход на главную страницу.
+//   - "У вас есть уч.запись?" — переключает интерфейс на страницу входа.
+//
+// Валидация осуществляется через метод `Validate()` структуры `RegistrationDTO`.
+// Ошибки отображаются пользователю через `showError`.
 func (t *TUI) createRegisterPage() tview.Primitive {
 	loginForm := tview.NewForm()
 	loginForm.SetTitle("GoKeeper - Регистрация").SetBorder(true)
@@ -87,9 +104,4 @@ func (t *TUI) createRegisterPage() tview.Primitive {
 	})
 
 	return loginForm
-}
-
-func validate(values map[string]string) bool {
-
-	return true
 }

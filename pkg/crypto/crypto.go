@@ -10,15 +10,26 @@ import (
 	"io"
 )
 
+// ctxKey используется как тип ключа для безопасного хранения значений в context.Context.
 type ctxKey string
 
 // KeyUser — ключ, используемый для хранения/извлечения ID пользователя из контекста.
 const KeyUser ctxKey = "user"
 
-var (
-	secretKey = "x3sdgsdg#$D_13@!5k9f"
-)
+// secretKey — симметричный ключ, используемый для шифрования данных.
+// Преобразуется в ключ AES через SHA-256.
+var secretKey = "x3sdgsdg#$D_13@!5k9f"
 
+// EncodeHash шифрует входной текст с использованием AES-256-GCM и возвращает hex-представление.
+//
+// Алгоритм:
+//  1. Вычисляется хэш ключа (SHA-256),
+//  2. Создаётся блок шифра AES,
+//  3. Генерируется nonce,
+//  4. Данные шифруются через GCM,
+//  5. nonce + ciphertext кодируются в hex.
+//
+// Возвращает строку hex и ошибку (если есть).
 func EncodeHash(text string) (string, error) {
 	key := sha256.Sum256([]byte(secretKey))
 
@@ -42,6 +53,11 @@ func EncodeHash(text string) (string, error) {
 	return hex.EncodeToString(full), nil
 }
 
+// DecodeHash расшифровывает hex-представление строки, зашифрованной с помощью EncodeHash.
+//
+// Проверяется корректность данных и длина nonce, затем данные расшифровываются через GCM.
+//
+// Возвращает исходную строку и ошибку (если расшифровка не удалась).
 func DecodeHash(hexStr string) (string, error) {
 	key := sha256.Sum256([]byte(secretKey))
 

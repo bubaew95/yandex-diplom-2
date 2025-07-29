@@ -16,6 +16,9 @@ import (
 	"strings"
 )
 
+// Service описывает интерфейс бизнес-логики, используемый gRPC-сервером.
+// Интерфейс реализуется на стороне application/service слоя.
+//
 //go:generate go run github.com/vektra/mockery/v2@v2.52.2 --name=Service --filename=servicemock_test.go --inpackage
 type Service interface {
 	AddUser(ctx context.Context, r *model.RegistrationDTO) (*model.AuthResponse, error)
@@ -27,15 +30,23 @@ type Service interface {
 	FindAll(ctx context.Context) ([]*pb.DataResponse, error)
 }
 
+// Server реализует gRPC-сервер для сервиса GophKeeper.
+// Использует переданный интерфейс Service для выполнения операций.
 type Server struct {
 	pb.UnimplementedGoKeeperServer
 	service Service
 }
 
+// NewServer создаёт и возвращает новый gRPC-сервер с внедрённой бизнес-логикой (service).
 func NewServer(service Service) *Server {
 	return &Server{service: service}
 }
 
+// LoginInterceptor — middleware (перехватчик) для проверки JWT-токена в метаданных gRPC-запроса.
+//
+// Публичные методы (Login, Registration) не требуют авторизации.
+// Для остальных запросов токен извлекается из метаданных и проверяется.
+// При успехе пользователь добавляется в контекст.
 func LoginInterceptor() grpc.UnaryServerInterceptor {
 	publicMethods := map[string]struct{}{
 		"/gokeeper.GoKeeper/Registration": {},
@@ -79,6 +90,10 @@ func LoginInterceptor() grpc.UnaryServerInterceptor {
 	}
 }
 
+// Registration обрабатывает gRPC-запрос регистрации нового пользователя.
+//
+// Выполняет валидацию запроса и вызывает service.AddUser.
+// При успешной регистрации возвращает JWT-токен.
 func (s *Server) Registration(ctx context.Context, r *pb.RegistrationRequest) (*pb.TokenResponse, error) {
 	regData := model.RegistrationDTO{
 		User: model.User{
@@ -108,6 +123,9 @@ func (s *Server) Registration(ctx context.Context, r *pb.RegistrationRequest) (*
 	}, nil
 }
 
+// Login обрабатывает gRPC-запрос авторизации.
+//
+// Выполняет проверку email и пароля, возвращает JWT-токен при успехе.
 func (s *Server) Login(ctx context.Context, r *pb.LoginRequest) (*pb.TokenResponse, error) {
 	user, err := s.service.Login(ctx, &model.LoginDTO{
 		Email:    r.Email,
@@ -126,6 +144,7 @@ func (s *Server) Login(ctx context.Context, r *pb.LoginRequest) (*pb.TokenRespon
 	}, nil
 }
 
+// Add добавляет новую запись данных пользователя (шифрованный текст, тип).
 func (s *Server) Add(ctx context.Context, r *pb.DataRequest) (*pb.DataResponse, error) {
 	data, err := s.service.Add(ctx, &model.Data{
 		Text: r.Text,
@@ -143,6 +162,7 @@ func (s *Server) Add(ctx context.Context, r *pb.DataRequest) (*pb.DataResponse, 
 	}, nil
 }
 
+// Edit редактирует существующую запись данных пользователя.
 func (s *Server) Edit(ctx context.Context, r *pb.DataEditRequest) (*pb.DataResponse, error) {
 	data, err := s.service.Edit(ctx, &model.TextRequest{
 		ID:   r.Id,
@@ -159,6 +179,8 @@ func (s *Server) Edit(ctx context.Context, r *pb.DataEditRequest) (*pb.DataRespo
 		UserId: data.UserID,
 	}, nil
 }
+
+// Delete удаляет запись по ID.
 func (s *Server) Delete(ctx context.Context, r *pb.IdRequest) (*pb.SuccessResponse, error) {
 	if err := s.service.Delete(ctx, r.Id); err != nil {
 		if errors.Is(err, model.AccessDeniedError) {
@@ -176,6 +198,8 @@ func (s *Server) Delete(ctx context.Context, r *pb.IdRequest) (*pb.SuccessRespon
 		Success: true,
 	}, nil
 }
+
+// FindAll возвращает список всех записей пользователя.
 func (s *Server) FindAll(ctx context.Context, r *pb.EmptyRequest) (*pb.DataList, error) {
 	list, err := s.service.FindAll(ctx)
 	if err != nil {

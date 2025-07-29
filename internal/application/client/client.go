@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/bubaew95/yandex-diplom-2/config"
-	"github.com/bubaew95/yandex-diplom-2/internal/application/client/state"
 	"github.com/bubaew95/yandex-diplom-2/internal/model"
 	pb "github.com/bubaew95/yandex-diplom-2/internal/proto"
 	"google.golang.org/grpc"
@@ -12,9 +11,29 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+//go:generate go run github.com/vektra/mockery/v2@v2.52.2 --name=GoKeeperClient --filename=servermock_test.go --inpackage
+type GoKeeperClient interface {
+	Registration(ctx context.Context, in *pb.RegistrationRequest, opts ...grpc.CallOption) (*pb.TokenResponse, error)
+	Login(ctx context.Context, in *pb.LoginRequest, opts ...grpc.CallOption) (*pb.TokenResponse, error)
+	Add(ctx context.Context, in *pb.DataRequest, opts ...grpc.CallOption) (*pb.DataResponse, error)
+	Edit(ctx context.Context, in *pb.DataEditRequest, opts ...grpc.CallOption) (*pb.DataResponse, error)
+	Delete(ctx context.Context, in *pb.IdRequest, opts ...grpc.CallOption) (*pb.SuccessResponse, error)
+	FindAll(ctx context.Context, in *pb.EmptyRequest, opts ...grpc.CallOption) (*pb.DataList, error)
+}
+
+// State представляет состояние авторизованного пользователя.
+//
+// Содержит:
+//   - Token: строка авторизации (JWT или иная),
+//   - User: объект пользователя.
+type State struct {
+	Token string
+	User  model.User
+}
+
 type Client struct {
-	State        *state.State
-	KeeperClient pb.GoKeeperClient
+	State        *State
+	KeeperClient GoKeeperClient
 }
 
 func NewClient(cfg *config.Config) (*Client, error) {
@@ -28,7 +47,7 @@ func NewClient(cfg *config.Config) (*Client, error) {
 
 	return &Client{
 		KeeperClient: c,
-		State: &state.State{
+		State: &State{
 			Token: "",
 			User:  model.User{},
 		},

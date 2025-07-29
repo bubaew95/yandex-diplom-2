@@ -1,3 +1,6 @@
+// Package pages предоставляет пользовательский интерфейс (TUI) для
+// взаимодействия с данными разных типов: текст, файл, банковская карта и логин/пароль.
+// Данный файл реализует форму добавления и редактирования данных с учетом типа.
 package pages
 
 import (
@@ -11,6 +14,8 @@ import (
 	"os"
 )
 
+// createAddPage создаёт форму для добавления или редактирования объекта model.Data.
+// В зависимости от переданного типа данных отображаются соответствующие поля.
 func (t *TUI) createAddPage(id *int64, data *model.Data) tview.Primitive {
 	form := tview.NewForm()
 	form.SetBorder(true)
@@ -58,6 +63,7 @@ func (t *TUI) createAddPage(id *int64, data *model.Data) tview.Primitive {
 	return form
 }
 
+// addDataTypeSpecificFields добавляет в форму поля, специфичные для выбранного типа данных.
 func (t *TUI) addDataTypeSpecificFields(form *tview.Form, dataType string, data *model.Data) {
 	login := &model.LoginRequest{}
 	text := &model.TextRequest{}
@@ -105,6 +111,8 @@ func (t *TUI) addDataTypeSpecificFields(form *tview.Form, dataType string, data 
 	}
 }
 
+// addAddPageButtons добавляет в форму кнопки "Сохранить" и "Отмена".
+// При сохранении выполняется сериализация, шифрование и отправка данных.
 func (t *TUI) addAddPageButtons(
 	form *tview.Form,
 	dataTypes []string,
@@ -196,6 +204,7 @@ func (t *TUI) addAddPageButtons(
 	})
 }
 
+// processFormFields извлекает значения из полей формы и заполняет переданные структуры.
 func processFormFields(
 	form *tview.Form,
 	login *model.LoginRequest,
@@ -230,6 +239,8 @@ func processFormFields(
 	}
 }
 
+// marshalBinaryData сериализует содержимое бинарного файла в JSON.
+// Читает файл по указанному пути и кодирует его содержимое в поле data.
 func marshalBinaryData(binary *model.BinaryDataContent) ([]byte, error) {
 	if binary.FileName == "" {
 		return nil, fmt.Errorf("файл не выбран")
@@ -245,6 +256,7 @@ func marshalBinaryData(binary *model.BinaryDataContent) ([]byte, error) {
 	})
 }
 
+// marshalTypedData сериализует одну из поддерживаемых структур (логин, текст, карта) в JSON.
 func marshalTypedData(
 	dataType model.DataType,
 	login *model.LoginRequest,
@@ -265,6 +277,8 @@ func marshalTypedData(
 	return json.Marshal(payload)
 }
 
+// addBinaryDataFields добавляет в форму элементы управления для выбора и хранения пути к файлу.
+// Используется для ввода бинарных данных. Путь сохраняется в скрытом поле "FilePath".
 func (t *TUI) addBinaryDataFields(form *tview.Form) {
 	filePathView := tview.NewTextView().
 		SetText("Файл не выбран").
