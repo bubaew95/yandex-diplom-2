@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/bubaew95/yandex-diplom-2/config"
+	"github.com/bubaew95/yandex-diplom-2/internal/application/client"
 	"github.com/bubaew95/yandex-diplom-2/internal/application/client/pages"
 	"github.com/bubaew95/yandex-diplom-2/internal/logger"
 	"github.com/joho/godotenv"
@@ -10,7 +11,7 @@ import (
 )
 
 var (
-	version   string = "0.1"
+	version   = "0.1"
 	buildDate string
 )
 
@@ -32,6 +33,14 @@ func main() {
 	if err != nil {
 		logger.Log.Fatal(err.Error())
 	}
+
+	defer func(Client *client.Client) {
+		fmt.Printf("Client is shutting down")
+		err := Client.Stop()
+		if err != nil {
+			logger.Log.Fatal(err.Error())
+		}
+	}(tui.Client)
 
 	if err := tui.Run(); err != nil {
 		logger.Log.Fatal(err.Error())

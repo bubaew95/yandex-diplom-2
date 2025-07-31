@@ -87,7 +87,7 @@ func NewTUI(cfg *config.Config) (*TUI, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	
 	tui.Client = clnt
 
 	return tui, nil

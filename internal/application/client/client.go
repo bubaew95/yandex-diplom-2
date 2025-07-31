@@ -32,8 +32,9 @@ type State struct {
 }
 
 type Client struct {
-	State        *State
 	KeeperClient GoKeeperClient
+	State        *State
+	Conn         *grpc.ClientConn
 }
 
 func NewClient(cfg *config.Config) (*Client, error) {
@@ -42,10 +43,10 @@ func NewClient(cfg *config.Config) (*Client, error) {
 		return nil, err
 	}
 
-	//defer conn.Close()
 	c := pb.NewGoKeeperClient(conn)
 
 	return &Client{
+		Conn:         conn,
 		KeeperClient: c,
 		State: &State{
 			Token: "",
@@ -59,7 +60,7 @@ func (c *Client) Login(ctx context.Context, email string, password string) (stri
 		Email:    email,
 		Password: password,
 	})
-	
+
 	if err != nil {
 		return "", err
 	}
@@ -122,4 +123,8 @@ func (c *Client) Delete(ctx context.Context, id *pb.IdRequest) (bool, error) {
 	}
 
 	return res.Success, nil
+}
+
+func (c *Client) Stop() error {
+	return c.Conn.Close()
 }
