@@ -71,28 +71,16 @@ func (t *TUI) addDataTypeSpecificFields(form *tview.Form, dataType string, data 
 	//binary := &model.BinaryDataContent{}
 
 	if data != nil {
-		decodeText, err := crypto.DecodeHash(data.Text)
-		if err != nil {
-			t.showError(fmt.Sprintf("Ошибка при расшифровании данных. %s", err.Error()))
-			return
-		}
-
-		var decodeJson any
-		switch data.Type {
-		case model.TextData:
-			decodeJson = text
-		case model.LoginPassword:
-			decodeJson = login
-		case model.CardData:
-			decodeJson = card
-		}
-
-		if err := json.Unmarshal([]byte(decodeText), decodeJson); err != nil {
-			t.showError(fmt.Sprintf("Ошибка в декодировании данных. %s", err.Error()))
+		if err := t.deserializeData(data, text, login, card); err != nil {
+			t.showError(fmt.Sprintf("Ошибка при расшифровке/декодировании: %v", err))
 			return
 		}
 	}
 
+	t.buildFormFields(form, dataType, login, text, card)
+}
+
+func (t *TUI) buildFormFields(form *tview.Form, dataType string, login *model.LoginRequest, text *model.TextRequest, card *model.CardDataContent) {
 	switch dataType {
 	case "Логин/Пароль":
 		form.
@@ -109,6 +97,28 @@ func (t *TUI) addDataTypeSpecificFields(form *tview.Form, dataType string, data 
 	case "Файл":
 		t.addBinaryDataFields(form)
 	}
+}
+
+func (t *TUI) deserializeData(data *model.Data, text *model.TextRequest, login *model.LoginRequest, card *model.CardDataContent) error {
+	decodeText, err := crypto.DecodeHash(data.Text)
+	if err != nil {
+		return err
+	}
+
+	var decodeJson any
+	switch data.Type {
+	case model.TextData:
+		decodeJson = text
+	case model.LoginPassword:
+		decodeJson = login
+	case model.CardData:
+		decodeJson = card
+	}
+
+	if err := json.Unmarshal([]byte(decodeText), decodeJson); err != nil {
+		return err
+	}
+	return nil
 }
 
 // addAddPageButtons добавляет в форму кнопки "Сохранить" и "Отмена".

@@ -83,10 +83,14 @@ type BinaryDataContent struct {
 	Data     []byte `json:"data"`      // Содержимое файла
 }
 
+// FormFieldParse определяет интерфейс для структур, которые могут парсить данные из формы tview.Form.
+// Каждая реализация должна извлекать данные из соответствующих полей формы и сохранять их в полях структуры.
 type FormFieldParse interface {
 	ParseForm(form *tview.Form)
 }
 
+// ParseForm извлекает данные из полей формы с метками "Логин:" и "Пароль:"
+// и сохраняет их в соответствующие поля LoginRequest.
 func (l *LoginRequest) ParseForm(form *tview.Form) {
 	helper.FormItems[*tview.InputField](form, func(input *tview.InputField) {
 		text := input.GetText()
@@ -99,6 +103,8 @@ func (l *LoginRequest) ParseForm(form *tview.Form) {
 	})
 }
 
+// ParseForm извлекает путь к бинарному файлу из поля формы с меткой "FilePath"
+// и сохраняет его в поле FileName структуры BinaryDataContent.
 func (b *BinaryDataContent) ParseForm(form *tview.Form) {
 	helper.FormItems[*tview.InputField](form, func(input *tview.InputField) {
 		switch input.GetLabel() {
@@ -108,6 +114,9 @@ func (b *BinaryDataContent) ParseForm(form *tview.Form) {
 	})
 }
 
+// ParseForm извлекает данные из формы о банковской карте:
+// номер карты, имя владельца, срок действия и CVV.
+// Эти данные читаются из полей формы с соответствующими метками и сохраняются в структуру CardDataContent.
 func (c *CardDataContent) ParseForm(form *tview.Form) {
 	helper.FormItems[*tview.InputField](form, func(field *tview.InputField) {
 		text := field.GetText()
@@ -125,6 +134,8 @@ func (c *CardDataContent) ParseForm(form *tview.Form) {
 	})
 }
 
+// ParseForm извлекает текст из поля формы с меткой "Текст:"
+// и сохраняет его в поле Text структуры TextRequest.
 func (t *TextRequest) ParseForm(form *tview.Form) {
 	helper.FormItems[*tview.TextArea](form, func(field *tview.TextArea) {
 		text := field.GetText()

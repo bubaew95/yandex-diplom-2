@@ -3,6 +3,7 @@ package pages
 import (
 	"context"
 	"fmt"
+	"github.com/bubaew95/yandex-diplom-2/pkg/helper"
 	"github.com/rivo/tview"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -32,16 +33,15 @@ func (t *TUI) createLoginPage() tview.Primitive {
 	loginForm.AddButton("Войти", func() {
 		var email, password string
 
-		if item := loginForm.GetFormItemByLabel("E-mail"); item != nil {
-			if field, ok := item.(*tview.InputField); ok {
-				email = field.GetText()
+		helper.FormItems[*tview.InputField](loginForm, func(input *tview.InputField) {
+			text := input.GetText()
+			switch input.GetLabel() {
+			case "E-mail":
+				email = text
+			case "Пароль":
+				password = text
 			}
-		}
-		if item := loginForm.GetFormItemByLabel("Пароль"); item != nil {
-			if field, ok := item.(*tview.InputField); ok {
-				password = field.GetText()
-			}
-		}
+		})
 
 		if email == "" || password == "" {
 			t.showError("Email и пароль не могут быть пустыми!")
