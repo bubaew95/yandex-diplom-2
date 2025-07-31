@@ -1,5 +1,10 @@
 package model
 
+import (
+	"github.com/bubaew95/yandex-diplom-2/pkg/helper"
+	"github.com/rivo/tview"
+)
+
 // DataType определяет тип хранимых данных пользователя.
 type DataType string
 
@@ -76,4 +81,57 @@ type CardDataContent struct {
 type BinaryDataContent struct {
 	FileName string `json:"file_name"` // Имя файла
 	Data     []byte `json:"data"`      // Содержимое файла
+}
+
+type FormFieldParse interface {
+	ParseForm(form *tview.Form)
+}
+
+func (l *LoginRequest) ParseForm(form *tview.Form) {
+	helper.FormItems[*tview.InputField](form, func(input *tview.InputField) {
+		text := input.GetText()
+		switch input.GetLabel() {
+		case "Логин:":
+			l.Login = text
+		case "Пароль:":
+			l.Password = text
+		}
+	})
+}
+
+func (b *BinaryDataContent) ParseForm(form *tview.Form) {
+	helper.FormItems[*tview.InputField](form, func(input *tview.InputField) {
+		switch input.GetLabel() {
+		case "FilePath":
+			b.FileName = input.GetText()
+		}
+	})
+}
+
+func (c *CardDataContent) ParseForm(form *tview.Form) {
+	helper.FormItems[*tview.InputField](form, func(field *tview.InputField) {
+		text := field.GetText()
+
+		switch field.GetLabel() {
+		case "Номер карты:":
+			c.CardNumber = text
+		case "Имя владельца:":
+			c.CardHolder = text
+		case "Срок действия (MM/YY):":
+			c.ExpiryDate = text
+		case "CVV:":
+			c.CVV = text
+		}
+	})
+}
+
+func (t *TextRequest) ParseForm(form *tview.Form) {
+	helper.FormItems[*tview.TextArea](form, func(field *tview.TextArea) {
+		text := field.GetText()
+
+		switch field.GetLabel() {
+		case "Текст:":
+			t.Text = text
+		}
+	})
 }

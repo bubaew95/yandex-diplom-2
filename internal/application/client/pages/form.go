@@ -119,48 +119,28 @@ func (t *TUI) addAddPageButtons(
 	currentTypeIndex int,
 	id *int64,
 ) {
+	t.addSaveButton(form, dataTypes, currentTypeIndex, id)
+	t.addCancelButton(form)
+}
+
+func (t *TUI) addSaveButton(
+	form *tview.Form,
+	dataTypes []string,
+	currentTypeIndex int,
+	id *int64,
+) {
 	form.AddButton("Сохранить", func() {
 		dataType := dataTypes[currentTypeIndex]
 		req := &model.Data{}
 
-		switch dataType {
-		case "Логин/Пароль":
-			req.Type = model.LoginPassword
-		case "Текст":
-			req.Type = model.TextData
-		case "Банк.карта":
-			req.Type = model.CardData
-		case "Файл":
-			req.Type = model.BinaryData
-		}
+		t.setType(req, dataType)
 
-		// Инициализация всех возможных структур
-		login := &model.LoginRequest{}
-		text := &model.TextRequest{}
-		card := &model.CardDataContent{}
-		binary := &model.BinaryDataContent{}
-
-		// Обработка полей формы
-		processFormFields(form, login, text, card, binary)
-
-		// Сериализация данных
-		var (
-			jsonData []byte
-			err      error
-		)
-
-		if req.Type == model.BinaryData {
-			jsonData, err = marshalBinaryData(binary)
-		} else {
-			jsonData, err = marshalTypedData(req.Type, login, text, card)
-		}
-
+		jsonData, err := t.serializeFormData(form, req.Type)
 		if err != nil {
 			t.showError(fmt.Sprintf("Ошибка сериализации: %v", err))
 			return
 		}
 
-		// Шифрование
 		hash, err := crypto.EncodeHash(string(jsonData))
 		if err != nil {
 			t.showError("Ошибка при шифровании данных")
@@ -169,25 +149,36 @@ func (t *TUI) addAddPageButtons(
 
 		req.Text = hash
 
-		var res bool
-		if id != nil {
-			res, err = t.Client.Edit(context.Background(), *id, req)
-		} else {
-			res, err = t.Client.Add(context.Background(), req)
-		}
-
-		if err != nil {
+		if err := t.submitData(id, req); err != nil {
 			t.showError(err.Error())
+			return
 		}
 
-		if res {
-			t.loadData()
-			t.startAutoSync()
-
-			t.Pages.SwitchToPage("main")
-		}
+		t.loadData()
+		t.startAutoSync()
+		t.Pages.SwitchToPage("main")
 	})
+}
 
+func (t *TUI) serializeFormData(form *tview.Form, dataType model.DataType) ([]byte, error) {
+	// Инициализация всех возможных структур
+	login := &model.LoginRequest{}
+	text := &model.TextRequest{}
+	card := &model.CardDataContent{}
+	binary := &model.BinaryDataContent{}
+
+	// Обработка полей формы
+	processFormFields(form, login, text, card, binary)
+
+	// Сериализация данных
+	if dataType == model.BinaryData {
+		return marshalBinaryData(binary)
+	}
+
+	return marshalTypedData(dataType, login, text, card)
+}
+
+func (t *TUI) addCancelButton(form *tview.Form) {
 	form.AddButton("Отмена", func() {
 		t.showDialog(Dialog{
 			Title:       "Предупреждение",
@@ -204,38 +195,41 @@ func (t *TUI) addAddPageButtons(
 	})
 }
 
+func (t *TUI) setType(req *model.Data, dataType string) {
+	switch dataType {
+	case "Логин/Пароль":
+		req.Type = model.LoginPassword
+	case "Текст":
+		req.Type = model.TextData
+	case "Банк.карта":
+		req.Type = model.CardData
+	case "Файл":
+		req.Type = model.BinaryData
+	}
+}
+
+func (t *TUI) submitData(id *int64, req *model.Data) error {
+	var (
+		err error
+	)
+
+	if id != nil {
+		_, err = t.Client.Edit(context.Background(), *id, req)
+	} else {
+		_, err = t.Client.Add(context.Background(), req)
+	}
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // processFormFields извлекает значения из полей формы и заполняет переданные структуры.
-func processFormFields(
-	form *tview.Form,
-	login *model.LoginRequest,
-	text *model.TextRequest,
-	card *model.CardDataContent,
-	binary *model.BinaryDataContent,
-) {
-	for i := 0; i < form.GetFormItemCount(); i++ {
-		switch field := form.GetFormItem(i).(type) {
-		case *tview.InputField:
-			switch field.GetLabel() {
-			case "Логин:":
-				login.Login = field.GetText()
-			case "Пароль:":
-				login.Password = field.GetText()
-			case "Номер карты:":
-				card.CardNumber = field.GetText()
-			case "Имя владельца:":
-				card.CardHolder = field.GetText()
-			case "Срок действия (MM/YY):":
-				card.ExpiryDate = field.GetText()
-			case "CVV:":
-				card.CVV = field.GetText()
-			case "FilePath":
-				binary.FileName = field.GetText()
-			}
-		case *tview.TextArea:
-			if field.GetLabel() == "Текст:" {
-				text.Text = field.GetText()
-			}
-		}
+func processFormFields(form *tview.Form, parsers ...model.FormFieldParse) {
+	for _, parse := range parsers {
+		parse.ParseForm(form)
 	}
 }
 
