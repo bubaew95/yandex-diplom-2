@@ -44,12 +44,12 @@ func (_m *MockService) Add(ctx context.Context, r *model.Data) (model.TextRespon
 	return r0, r1
 }
 
-// AddUser provides a mock function with given fields: ctx, r
-func (_m *MockService) AddUser(ctx context.Context, r *model.RegistrationDTO) (*model.AuthResponse, error) {
+// CreateUser provides a mock function with given fields: ctx, r
+func (_m *MockService) CreateUser(ctx context.Context, r *model.RegistrationDTO) (*model.AuthResponse, error) {
 	ret := _m.Called(ctx, r)
 
 	if len(ret) == 0 {
-		panic("no return value specified for AddUser")
+		panic("no return value specified for CreateUser")
 	}
 
 	var r0 *model.AuthResponse
@@ -150,12 +150,12 @@ func (_m *MockService) FindAll(ctx context.Context) ([]*proto.DataResponse, erro
 	return r0, r1
 }
 
-// Login provides a mock function with given fields: ctx, r
-func (_m *MockService) Login(ctx context.Context, r *model.LoginDTO) (model.AuthResponse, error) {
+// FindUser provides a mock function with given fields: ctx, r
+func (_m *MockService) FindUser(ctx context.Context, r *model.LoginDTO) (model.AuthResponse, error) {
 	ret := _m.Called(ctx, r)
 
 	if len(ret) == 0 {
-		panic("no return value specified for Login")
+		panic("no return value specified for FindUser")
 	}
 
 	var r0 model.AuthResponse

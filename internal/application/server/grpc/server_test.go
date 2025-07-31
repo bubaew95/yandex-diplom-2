@@ -52,8 +52,8 @@ func TestLoginInterceptor(t *testing.T) {
 			expectCode: codes.OK,
 		},
 		{
-			name:       "Публичный метод — Login",
-			method:     "/gokeeper.GoKeeper/Login",
+			name:       "Публичный метод — FindUser",
+			method:     "/gokeeper.GoKeeper/FindUser",
 			md:         nil,
 			expectCode: codes.OK,
 		},
@@ -111,7 +111,7 @@ func TestLoginInterceptor(t *testing.T) {
 				handlerCalled = true
 				if tc.expectCode == codes.OK {
 					user, ok := ctx.Value(crypto.KeyUser).(model.User)
-					if tc.method != "/gokeeper.GoKeeper/Login" && tc.method != "/gokeeper.GoKeeper/Registration" {
+					if tc.method != "/gokeeper.GoKeeper/FindUser" && tc.method != "/gokeeper.GoKeeper/Registration" {
 						assert.True(t, ok)
 						assert.Equal(t, validUser.Email, user.Email)
 					}
@@ -147,7 +147,7 @@ func TestRegistration(t *testing.T) {
 			FirstName:  "Test",
 			LastName:   "User",
 		}
-		mockService.On("AddUser", mock.Anything, mock.Anything).
+		mockService.On("CreateUser", mock.Anything, mock.Anything).
 			Return(&model.AuthResponse{Token: "jwt-token"}, nil)
 
 		resp, err := srv.Registration(context.Background(), req)
@@ -182,7 +182,7 @@ func TestRegistration(t *testing.T) {
 			FirstName:  "Test",
 			LastName:   "User",
 		}
-		mockService.On("AddUser", mock.Anything, mock.Anything).
+		mockService.On("CreateUser", mock.Anything, mock.Anything).
 			Return(nil, model.UserAlreadyExistsError)
 
 		_, err := srv.Registration(context.Background(), req)
@@ -201,7 +201,7 @@ func TestRegistration(t *testing.T) {
 			FirstName:  "Test",
 			LastName:   "User",
 		}
-		mockService.On("AddUser", mock.Anything, mock.Anything).
+		mockService.On("CreateUser", mock.Anything, mock.Anything).
 			Return(nil, errors.New("db error"))
 
 		_, err := srv.Registration(context.Background(), req)
@@ -219,7 +219,7 @@ func TestLogin(t *testing.T) {
 			Email:    "test@example.com",
 			Password: "password",
 		}
-		mockService.On("Login", mock.Anything, mock.Anything).
+		mockService.On("FindUser", mock.Anything, mock.Anything).
 			Return(model.AuthResponse{Token: "jwt-token"}, nil)
 
 		resp, err := srv.Login(context.Background(), req)
@@ -234,7 +234,7 @@ func TestLogin(t *testing.T) {
 			Email:    "wrong@example.com",
 			Password: "wrong",
 		}
-		mockService.On("Login", mock.Anything, mock.Anything).
+		mockService.On("FindUser", mock.Anything, mock.Anything).
 			Return(model.AuthResponse{}, model.LoginAndPasswordError)
 
 		_, err := srv.Login(context.Background(), req)
@@ -249,7 +249,7 @@ func TestLogin(t *testing.T) {
 			Email:    "err@example.com",
 			Password: "password",
 		}
-		mockService.On("Login", mock.Anything, mock.Anything).
+		mockService.On("FindUser", mock.Anything, mock.Anything).
 			Return(model.AuthResponse{}, errors.New("db fail"))
 
 		_, err := srv.Login(context.Background(), req)

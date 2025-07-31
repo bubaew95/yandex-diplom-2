@@ -26,10 +26,6 @@ func NewEncryptor(secret string) *Encryptor {
 	}
 }
 
-// secretKey — симметричный ключ, используемый для шифрования данных.
-// Преобразуется в ключ AES через SHA-256.
-//var secretKey = "x3sdgsdg#$D_13@!5k9f"
-
 // EncodeHash шифрует входной текст с использованием AES-256-GCM и возвращает hex-представление.
 //
 // Алгоритм:

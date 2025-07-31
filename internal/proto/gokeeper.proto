@@ -4,6 +4,8 @@ package gokeeper;
 
 option go_package = "github.com/bubaew95/yandex-diplom-2/internal/proto;proto";
 
+
+
 service GoKeeper {
   rpc Registration(RegistrationRequest) returns(TokenResponse);
   rpc Login(LoginRequest) returns(TokenResponse);

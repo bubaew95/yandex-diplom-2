@@ -42,14 +42,14 @@ func NewService(repo Repository, cfg config.Config) *Service {
 	return &Service{repo: repo, cfg: cfg}
 }
 
-// AddUser регистрирует нового пользователя.
+// CreateUser регистрирует нового пользователя.
 //
 // Выполняется:
 //   - проверка совпадения паролей,
 //   - хеширование пароля,
 //   - сохранение пользователя,
 //   - генерация JWT-токена.
-func (s Service) AddUser(ctx context.Context, r *model.RegistrationDTO) (*model.AuthResponse, error) {
+func (s Service) CreateUser(ctx context.Context, r *model.RegistrationDTO) (*model.AuthResponse, error) {
 	if r.Password != r.RePassword {
 		return nil, model.PasswordNotMatchError
 	}
@@ -83,13 +83,13 @@ func (s Service) AddUser(ctx context.Context, r *model.RegistrationDTO) (*model.
 	}, nil
 }
 
-// Login выполняет вход по email и паролю.
+// FindUser выполняет вход по email и паролю.
 //
 // Производит:
 //   - поиск пользователя,
 //   - сравнение хеша пароля,
 //   - генерацию токена.
-func (s Service) Login(ctx context.Context, r *model.LoginDTO) (model.AuthResponse, error) {
+func (s Service) FindUser(ctx context.Context, r *model.LoginDTO) (model.AuthResponse, error) {
 	user, err := s.repo.FindUserByEmail(ctx, r)
 	if err != nil {
 		logger.Log.Debug("login failed", zap.Error(err))

@@ -22,9 +22,8 @@ import (
 //
 //go:generate go run github.com/vektra/mockery/v2@v2.52.2 --name=Service --filename=servicemock_test.go --inpackage
 type Service interface {
-	AddUser(ctx context.Context, r *model.RegistrationDTO) (*model.AuthResponse, error)
-	Login(ctx context.Context, r *model.LoginDTO) (model.AuthResponse, error)
-
+	CreateUser(ctx context.Context, r *model.RegistrationDTO) (*model.AuthResponse, error)
+	FindUser(ctx context.Context, r *model.LoginDTO) (model.AuthResponse, error)
 	Add(ctx context.Context, r *model.Data) (model.TextResponse, error)
 	Edit(ctx context.Context, r *model.TextRequest) (model.TextResponse, error)
 	Delete(ctx context.Context, ID int64) error
@@ -45,13 +44,13 @@ func NewServer(service Service) *Server {
 
 // LoginInterceptor — middleware (перехватчик) для проверки JWT-токена в метаданных gRPC-запроса.
 //
-// Публичные методы (Login, Registration) не требуют авторизации.
+// Публичные методы (FindUser, Registration) не требуют авторизации.
 // Для остальных запросов токен извлекается из метаданных и проверяется.
 // При успехе пользователь добавляется в контекст.
 func LoginInterceptor(cfg config.Config) grpc.UnaryServerInterceptor {
 	publicMethods := map[string]struct{}{
 		"/gokeeper.GoKeeper/Registration": {},
-		"/gokeeper.GoKeeper/Login":        {},
+		"/gokeeper.GoKeeper/FindUser":     {},
 	}
 
 	return func(
@@ -94,7 +93,7 @@ func LoginInterceptor(cfg config.Config) grpc.UnaryServerInterceptor {
 
 // Registration обрабатывает gRPC-запрос регистрации нового пользователя.
 //
-// Выполняет валидацию запроса и вызывает service.AddUser.
+// Выполняет валидацию запроса и вызывает service.CreateUser.
 // При успешной регистрации возвращает JWT-токен.
 func (s *Server) Registration(ctx context.Context, r *pb.RegistrationRequest) (*pb.TokenResponse, error) {
 	regData := model.RegistrationDTO{
@@ -112,7 +111,7 @@ func (s *Server) Registration(ctx context.Context, r *pb.RegistrationRequest) (*
 		return nil, status.Error(codes.InvalidArgument, "invalid registration request")
 	}
 
-	jwt, err := s.service.AddUser(ctx, &regData)
+	jwt, err := s.service.CreateUser(ctx, &regData)
 	if err != nil {
 		if errors.Is(err, model.UserAlreadyExistsError) {
 			return nil, status.Error(codes.AlreadyExists, err.Error())
@@ -129,7 +128,7 @@ func (s *Server) Registration(ctx context.Context, r *pb.RegistrationRequest) (*
 //
 // Выполняет проверку email и пароля, возвращает JWT-токен при успехе.
 func (s *Server) Login(ctx context.Context, r *pb.LoginRequest) (*pb.TokenResponse, error) {
-	user, err := s.service.Login(ctx, &model.LoginDTO{
+	user, err := s.service.FindUser(ctx, &model.LoginDTO{
 		Email:    r.Email,
 		Password: r.Password,
 	})

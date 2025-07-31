@@ -503,7 +503,7 @@ func TestLogin(t *testing.T) {
 			}
 
 			svc := NewService(mockRepo, config.Config{})
-			result, err := svc.Login(tt.args.ctx, tt.args.r)
+			result, err := svc.FindUser(tt.args.ctx, tt.args.r)
 
 			if tt.want.errMessage != "" {
 				require.Error(t, err)
@@ -638,7 +638,7 @@ func TestAddUser(t *testing.T) {
 			}
 
 			svc := NewService(mockRepo, config.Config{})
-			resp, err := svc.AddUser(tt.args.ctx, tt.args.req)
+			resp, err := svc.CreateUser(tt.args.ctx, tt.args.req)
 
 			if tt.want.err != nil {
 				require.EqualError(t, err, tt.want.err.Error())
