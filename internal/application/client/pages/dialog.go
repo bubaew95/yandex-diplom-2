@@ -161,7 +161,7 @@ func (t *TUI) showDirDialog(
 ) {
 	var updateList func(string)
 	updateList = func(path string) {
-		t.Data.lastFileDialogDir = path
+		t.FileDialog.lastFileDialogDir = path
 		list := t.createList(path, pageName, updateList, selectCallback, onlyDirs)
 		form, input := t.createDialogForm("Имя: ", path, "Выбрать", func(inputText string) {
 			t.Pages.RemovePage(pageName)
@@ -236,8 +236,8 @@ func (t *TUI) showFileDialogForDir(callback func(string)) {
 // getInitialDirectory возвращает путь, который будет использоваться как начальный при открытии файлового диалога.
 // Предпочтение отдаётся последней директории, выбранной пользователем.
 func (t *TUI) getInitialDirectory() (string, error) {
-	if t.Data.lastFileDialogDir != "" {
-		return t.Data.lastFileDialogDir, nil
+	if t.FileDialog.lastFileDialogDir != "" {
+		return t.FileDialog.lastFileDialogDir, nil
 	}
 	if home, err := os.UserHomeDir(); err == nil {
 		return home, nil

@@ -59,7 +59,7 @@ func (c *Client) Login(ctx context.Context, email string, password string) (stri
 		Email:    email,
 		Password: password,
 	})
-
+	
 	if err != nil {
 		return "", err
 	}

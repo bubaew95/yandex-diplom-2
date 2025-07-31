@@ -3,7 +3,6 @@ package pages
 import (
 	"github.com/bubaew95/yandex-diplom-2/config"
 	"github.com/bubaew95/yandex-diplom-2/internal/application/client"
-	"github.com/bubaew95/yandex-diplom-2/internal/model"
 	pb "github.com/bubaew95/yandex-diplom-2/internal/proto"
 	"time"
 
@@ -35,18 +34,22 @@ const (
 	formSidePadding  = 20
 )
 
-// Data содержит отображаемые и служебные данные TUI-интерфейса.
+// TableState содержит отображаемые и служебные данные TUI-интерфейса.
 //
 // Используется для хранения:
 //   - списка полученных данных,
 //   - таблицы отображения,
 //   - текущей директории в файловом диалоге,
 //   - функции обновления таблицы.
-type Data struct {
-	dataList          []*pb.DataResponse
-	setViewData       func(data model.TextResponse)
-	updateTable       func()
-	dataTable         *tview.Table
+type TableState struct {
+	table         *tview.Table
+	list          []*pb.DataResponse
+	updateTableFn func()
+}
+
+// FileDialogState хранит состояние, связанное с диалогом выбора файлов,
+// включая последний использованный каталог в файловом диалоге.
+type FileDialogState struct {
 	lastFileDialogDir string
 }
 
@@ -59,14 +62,16 @@ type Data struct {
 //   - Config: конфигурация приложения,
 //   - Client: gRPC клиент,
 //   - SyncTimer: таймер для автообновления данных,
-//   - Data: состояние отображаемых пользовательских данных.
+//   - DataTable: состояние отображаемых пользовательских данных.
+//   - FileDialog: состояние диалового окна
 type TUI struct {
-	App       *tview.Application
-	Pages     *tview.Pages
-	Config    *config.Config
-	Client    *client.Client
-	SyncTimer *time.Timer
-	Data      Data
+	App        *tview.Application
+	Pages      *tview.Pages
+	Config     *config.Config
+	Client     *client.Client
+	SyncTimer  *time.Timer
+	DataTable  TableState
+	FileDialog FileDialogState
 }
 
 // NewTUI создаёт и инициализирует новый экземпляр TUI на основе переданной конфигурации.

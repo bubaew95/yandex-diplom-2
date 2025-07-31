@@ -45,9 +45,9 @@ func (t *TUI) createMainPage() tview.Primitive {
 		tview.NewTableCell("Обновлено").SetTextColor(tcell.ColorYellow).SetSelectable(false),
 	)
 
-	t.Data.dataTable = table
-	t.Data.updateTable = func() {
-		t.updateDataTable(t.Data.dataList)
+	t.DataTable.table = table
+	t.DataTable.updateTableFn = func() {
+		t.updateDataTable(t.DataTable.list)
 	}
 
 	form := tview.NewForm()
@@ -56,8 +56,8 @@ func (t *TUI) createMainPage() tview.Primitive {
 	})
 
 	form.AddButton("Изменить", func() {
-		if row, _ := table.GetSelection(); row > 0 && row <= len(t.Data.dataList) {
-			data := t.Data.dataList[row-1]
+		if row, _ := table.GetSelection(); row > 0 && row <= len(t.DataTable.list) {
+			data := t.DataTable.list[row-1]
 
 			t.Pages.AddAndSwitchToPage("edit", t.createAddPage(&data.Id, &model.Data{
 				Text: data.Text,
@@ -67,8 +67,8 @@ func (t *TUI) createMainPage() tview.Primitive {
 	})
 
 	form.AddButton("Удалить", func() {
-		if row, _ := table.GetSelection(); row > 0 && row <= len(t.Data.dataList) {
-			data := t.Data.dataList[row-1]
+		if row, _ := table.GetSelection(); row > 0 && row <= len(t.DataTable.list) {
+			data := t.DataTable.list[row-1]
 
 			t.showDialog(Dialog{
 				Title:       "Предупреждение",
@@ -98,7 +98,7 @@ func (t *TUI) createMainPage() tview.Primitive {
 		t.Client.State.Token = ""
 		t.Client.State.User = model.User{}
 
-		t.Data.dataList = nil
+		t.DataTable.list = nil
 
 		t.Pages.SwitchToPage("login")
 	})
@@ -116,17 +116,17 @@ func (t *TUI) createMainPage() tview.Primitive {
 }
 
 // loadData загружает все данные пользователя с сервера через gRPC,
-// сохраняет результат в t.Data.dataList и обновляет таблицу, если задана функция updateTable.
+// сохраняет результат в t.DataTable.list и обновляет таблицу, если задана функция updateTableFn.
 func (t *TUI) loadData() {
 	data, err := t.Client.GetAllData(context.Background())
 	if err != nil {
 		return
 	}
 
-	t.Data.dataList = data.List
+	t.DataTable.list = data.List
 
-	if t.Data.updateTable != nil {
-		t.Data.updateTable()
+	if t.DataTable.updateTableFn != nil {
+		t.DataTable.updateTableFn()
 	}
 }
 
@@ -135,7 +135,7 @@ func (t *TUI) loadData() {
 //
 // Для бинарных данных в поле названия отображается имя файла (без пути).
 func (t *TUI) updateDataTable(data []*pb.DataResponse) {
-	table := t.Data.dataTable
+	table := t.DataTable.table
 	table.Clear()
 
 	table.SetCell(0, idColumn, tview.NewTableCell("ID").SetTextColor(tcell.ColorYellow).SetSelectable(false))

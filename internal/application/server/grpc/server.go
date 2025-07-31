@@ -50,7 +50,7 @@ func NewServer(service Service) *Server {
 func LoginInterceptor(cfg config.Config) grpc.UnaryServerInterceptor {
 	publicMethods := map[string]struct{}{
 		"/gokeeper.GoKeeper/Registration": {},
-		"/gokeeper.GoKeeper/FindUser":     {},
+		"/gokeeper.GoKeeper/Login":        {},
 	}
 
 	return func(

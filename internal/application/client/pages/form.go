@@ -50,12 +50,14 @@ func (t *TUI) createAddPage(id *int64, data *model.Data) tview.Primitive {
 		t.addAddPageButtons(form, dataTypes, typeIndex, id)
 	}
 
-	form.AddDropDown("Тип данных", dataTypes, currentTypeIndex, func(_ string, index int) {
-		if index != currentTypeIndex {
-			currentTypeIndex = index
-			updateFormFields(index)
-		}
-	})
+	if id == nil {
+		form.AddDropDown("Тип данных", dataTypes, currentTypeIndex, func(_ string, index int) {
+			if index != currentTypeIndex {
+				currentTypeIndex = index
+				updateFormFields(index)
+			}
+		})
+	}
 
 	t.addDataTypeSpecificFields(form, dataTypes[currentTypeIndex], data)
 	t.addAddPageButtons(form, dataTypes, currentTypeIndex, id)

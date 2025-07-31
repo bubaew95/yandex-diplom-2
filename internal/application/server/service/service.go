@@ -98,12 +98,14 @@ func (s Service) FindUser(ctx context.Context, r *model.LoginDTO) (model.AuthRes
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(r.Password))
 	if err != nil {
+		logger.Log.Debug("hash failed", zap.Error(err))
 		return model.AuthResponse{}, model.LoginAndPasswordError
 	}
 
 	tkn := token.NewToken(&s.cfg)
 	jwt, err := tkn.EncodeJWTToken(user)
 	if err != nil {
+		logger.Log.Debug("generate jwt failed", zap.Error(err))
 		return model.AuthResponse{}, model.AuthorizationError
 	}
 
