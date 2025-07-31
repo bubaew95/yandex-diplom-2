@@ -72,7 +72,8 @@ func (s Service) AddUser(ctx context.Context, r *model.RegistrationDTO) (*model.
 		LastName:  r.LastName,
 	}
 
-	jwt, err := token.EncodeJWTToken(user)
+	tkn := token.NewToken(&s.cfg)
+	jwt, err := tkn.EncodeJWTToken(user)
 	if err != nil {
 		return nil, model.AuthorizationError
 	}
@@ -100,7 +101,8 @@ func (s Service) Login(ctx context.Context, r *model.LoginDTO) (model.AuthRespon
 		return model.AuthResponse{}, model.LoginAndPasswordError
 	}
 
-	jwt, err := token.EncodeJWTToken(user)
+	tkn := token.NewToken(&s.cfg)
+	jwt, err := tkn.EncodeJWTToken(user)
 	if err != nil {
 		return model.AuthResponse{}, model.AuthorizationError
 	}

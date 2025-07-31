@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"errors"
+	"github.com/bubaew95/yandex-diplom-2/config"
 	"github.com/bubaew95/yandex-diplom-2/internal/model"
 	pb "github.com/bubaew95/yandex-diplom-2/internal/proto"
 	"github.com/bubaew95/yandex-diplom-2/pkg/crypto"
@@ -14,10 +15,20 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"testing"
+	"time"
 )
 
 func TestLoginInterceptor(t *testing.T) {
-	interceptor := LoginInterceptor()
+	cfg := &config.Config{
+		Token: config.Token{
+			Secret: "secret",
+			Exp:    1 * time.Second,
+		},
+	}
+
+	tkn := token.NewToken(cfg)
+
+	interceptor := LoginInterceptor(*cfg)
 
 	validUser := model.User{
 		ID:        1,
@@ -25,7 +36,7 @@ func TestLoginInterceptor(t *testing.T) {
 		FirstName: "Test",
 		LastName:  "User",
 	}
-	validToken, _ := token.EncodeJWTToken(validUser)
+	validToken, _ := tkn.EncodeJWTToken(validUser)
 
 	tests := []struct {
 		name        string

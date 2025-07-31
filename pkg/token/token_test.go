@@ -3,6 +3,7 @@ package token
 import (
 	"encoding/base64"
 	"fmt"
+	"github.com/bubaew95/yandex-diplom-2/config"
 	"github.com/bubaew95/yandex-diplom-2/internal/model"
 	"github.com/stretchr/testify/assert"
 	"strings"
@@ -65,7 +66,7 @@ func TestJWTTokenEncodeDecode(t *testing.T) {
 					},
 					User: model.User{ID: 3},
 				})
-				tokStr, _ := token.SignedString([]byte(SecretKey))
+				tokStr, _ := token.SignedString([]byte("SecretKey"))
 				return tokStr
 			},
 			expectErr:      true,
@@ -91,7 +92,15 @@ func TestJWTTokenEncodeDecode(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tok, err := EncodeJWTToken(tt.user)
+
+			tkn := NewToken(&config.Config{
+				Token: config.Token{
+					Secret: "SecretKey",
+					Exp:    1 * time.Second,
+				},
+			})
+
+			tok, err := tkn.EncodeJWTToken(tt.user)
 			require.NoError(t, err)
 			require.NotEmpty(t, tok)
 
@@ -99,7 +108,7 @@ func TestJWTTokenEncodeDecode(t *testing.T) {
 				tok = tt.modifyToken(tok)
 			}
 
-			got, err := DecodeJWTToken(tok)
+			got, err := tkn.DecodeJWTToken(tok)
 
 			if tt.expectErr {
 				require.Error(t, err)
@@ -130,11 +139,18 @@ func TestDecodeJWTToken(t *testing.T) {
 		expectedErrMsg string
 	}
 
+	tkn := NewToken(&config.Config{
+		Token: config.Token{
+			Secret: "SecretKey",
+			Exp:    1 * time.Second,
+		},
+	})
+
 	tests := []testCase{
 		{
 			name: "валидный токен",
 			tokenGenerator: func() string {
-				tok, err := EncodeJWTToken(user)
+				tok, err := tkn.EncodeJWTToken(user)
 				require.NoError(t, err)
 				return tok
 			},
@@ -144,7 +160,7 @@ func TestDecodeJWTToken(t *testing.T) {
 		{
 			name: "токен с невалидной подписью",
 			tokenGenerator: func() string {
-				tok, err := EncodeJWTToken(user)
+				tok, err := tkn.EncodeJWTToken(user)
 				require.NoError(t, err)
 				parts := strings.Split(tok, ".")
 				parts[2] = "invalidsignature" // подменяем подпись
@@ -162,7 +178,7 @@ func TestDecodeJWTToken(t *testing.T) {
 					},
 					User: user,
 				})
-				signed, err := tok.SignedString([]byte(SecretKey))
+				signed, err := tok.SignedString([]byte("SecretKey"))
 				require.NoError(t, err)
 				return signed
 			},
@@ -197,7 +213,7 @@ func TestDecodeJWTToken(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			tok := tt.tokenGenerator()
 
-			gotUser, err := DecodeJWTToken(tok)
+			gotUser, err := tkn.DecodeJWTToken(tok)
 			if tt.wantErr {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.expectedErrMsg)

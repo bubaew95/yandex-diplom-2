@@ -58,7 +58,9 @@ func TestEncodeDecodeHash(t *testing.T) {
 	for _, tt := range tests {
 		tt := tt // захват переменной
 		t.Run(tt.name, func(t *testing.T) {
-			enc, err := EncodeHash(tt.input)
+
+			encrypt := NewEncryptor("test")
+			enc, err := encrypt.EncodeHash(tt.input)
 			require.NoError(t, err)
 			require.NotEmpty(t, enc)
 
@@ -66,7 +68,7 @@ func TestEncodeDecodeHash(t *testing.T) {
 				enc = tt.modifyHex(enc)
 			}
 
-			dec, err := DecodeHash(enc)
+			dec, err := encrypt.DecodeHash(enc)
 			if tt.wantErr {
 				require.Error(t, err)
 			} else {
@@ -82,10 +84,11 @@ func TestEncryptProducesDifferentResults(t *testing.T) {
 
 	const input = "один и тот же текст"
 
-	c1, err := EncodeHash(input)
+	encrypt := NewEncryptor("test")
+	c1, err := encrypt.EncodeHash(input)
 	require.NoError(t, err)
 
-	c2, err := EncodeHash(input)
+	c2, err := encrypt.EncodeHash(input)
 	require.NoError(t, err)
 
 	require.NotEqual(t, c1, c2, "Шифротексты не должны совпадать из-за случайного nonce")

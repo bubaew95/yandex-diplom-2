@@ -100,7 +100,8 @@ func (t *TUI) buildFormFields(form *tview.Form, dataType string, login *model.Lo
 }
 
 func (t *TUI) deserializeData(data *model.Data, text *model.TextRequest, login *model.LoginRequest, card *model.CardDataContent) error {
-	decodeText, err := crypto.DecodeHash(data.Text)
+	encrypt := crypto.NewEncryptor(t.Config.SecretKey)
+	decodeText, err := encrypt.DecodeHash(data.Text)
 	if err != nil {
 		return err
 	}
@@ -151,7 +152,8 @@ func (t *TUI) addSaveButton(
 			return
 		}
 
-		hash, err := crypto.EncodeHash(string(jsonData))
+		encrypt := crypto.NewEncryptor(t.Config.SecretKey)
+		hash, err := encrypt.EncodeHash(string(jsonData))
 		if err != nil {
 			t.showError("Ошибка при шифровании данных")
 			return

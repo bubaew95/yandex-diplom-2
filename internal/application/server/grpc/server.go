@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"errors"
+	"github.com/bubaew95/yandex-diplom-2/config"
 	"github.com/bubaew95/yandex-diplom-2/internal/logger"
 	"github.com/bubaew95/yandex-diplom-2/internal/model"
 	pb "github.com/bubaew95/yandex-diplom-2/internal/proto"
@@ -47,7 +48,7 @@ func NewServer(service Service) *Server {
 // Публичные методы (Login, Registration) не требуют авторизации.
 // Для остальных запросов токен извлекается из метаданных и проверяется.
 // При успехе пользователь добавляется в контекст.
-func LoginInterceptor() grpc.UnaryServerInterceptor {
+func LoginInterceptor(cfg config.Config) grpc.UnaryServerInterceptor {
 	publicMethods := map[string]struct{}{
 		"/gokeeper.GoKeeper/Registration": {},
 		"/gokeeper.GoKeeper/Login":        {},
@@ -78,7 +79,8 @@ func LoginInterceptor() grpc.UnaryServerInterceptor {
 			return nil, status.Error(codes.Unauthenticated, "authorization error")
 		}
 
-		user, err := token.DecodeJWTToken(tkn[7:])
+		mTkn := token.NewToken(&cfg)
+		user, err := mTkn.DecodeJWTToken(tkn[7:])
 		if err != nil {
 			logger.Log.Debug("token decode error", zap.Error(err))
 			return nil, status.Error(codes.Unauthenticated, err.Error())

@@ -16,9 +16,19 @@ type ctxKey string
 // KeyUser — ключ, используемый для хранения/извлечения ID пользователя из контекста.
 const KeyUser ctxKey = "user"
 
+type Encryptor struct {
+	Key string
+}
+
+func NewEncryptor(secret string) *Encryptor {
+	return &Encryptor{
+		Key: secret,
+	}
+}
+
 // secretKey — симметричный ключ, используемый для шифрования данных.
 // Преобразуется в ключ AES через SHA-256.
-var secretKey = "x3sdgsdg#$D_13@!5k9f"
+//var secretKey = "x3sdgsdg#$D_13@!5k9f"
 
 // EncodeHash шифрует входной текст с использованием AES-256-GCM и возвращает hex-представление.
 //
@@ -30,8 +40,8 @@ var secretKey = "x3sdgsdg#$D_13@!5k9f"
 //  5. nonce + ciphertext кодируются в hex.
 //
 // Возвращает строку hex и ошибку (если есть).
-func EncodeHash(text string) (string, error) {
-	key := sha256.Sum256([]byte(secretKey))
+func (e *Encryptor) EncodeHash(text string) (string, error) {
+	key := sha256.Sum256([]byte(e.Key))
 
 	block, err := aes.NewCipher(key[:])
 	if err != nil {
@@ -58,8 +68,8 @@ func EncodeHash(text string) (string, error) {
 // Проверяется корректность данных и длина nonce, затем данные расшифровываются через GCM.
 //
 // Возвращает исходную строку и ошибку (если расшифровка не удалась).
-func DecodeHash(hexStr string) (string, error) {
-	key := sha256.Sum256([]byte(secretKey))
+func (e *Encryptor) DecodeHash(hexStr string) (string, error) {
+	key := sha256.Sum256([]byte(e.Key))
 
 	data, err := hex.DecodeString(hexStr)
 	if err != nil {

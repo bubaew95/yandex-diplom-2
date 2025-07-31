@@ -6,23 +6,25 @@ package config
 import (
 	"flag"
 	"os"
+	"strconv"
 	"time"
 )
 
-// token представляет данные токена авторизации,
+// Token представляет данные токена авторизации,
 // включая секретный ключ и время истечения.
-type token struct {
-	Secret string    // Secret — секретный ключ токена
-	Exp    time.Time // Exp — время истечения токена
+type Token struct {
+	Secret string        // Secret — секретный ключ токена
+	Exp    time.Duration // Exp — время истечения токена
 }
 
 // Config представляет конфигурацию приложения,
 // включая порт, строку подключения к базе данных (DSN)
 // и данные токена авторизации.
 type Config struct {
-	Port  string // Port — порт, на котором будет слушать приложение
-	DSN   string // DSN — строка подключения к базе данных
-	Token token  // Token — данные токена авторизации
+	Port      string // Port — порт, на котором будет слушать приложение
+	DSN       string // DSN — строка подключения к базе данных
+	SecretKey string // SecretKey - секрет ключ шифрования
+	Token     Token  // Token — данные токена авторизации
 }
 
 // NewConfig создает новый экземпляр Config.
@@ -34,6 +36,9 @@ type Config struct {
 func NewConfig() *Config {
 	port := flag.String("p", "", "port to listen on")
 	dsn := flag.String("d", "", "dsn to connect to")
+	tokenSecret := flag.String("t", "", "Token secret")
+	tokenExpiration := flag.Int("e", 1, "Token expiration")
+	secretKey := flag.String("s", "", "Secret key")
 	flag.Parse()
 
 	// Если задана переменная окружения PORT, она переопределяет значение из флага.
@@ -46,8 +51,26 @@ func NewConfig() *Config {
 		*dsn = envDSN
 	}
 
+	if envTokenSecretEnv := os.Getenv("TOKEN_SECRET_KEY"); envTokenSecretEnv != "" {
+		*tokenSecret = envTokenSecretEnv
+	}
+
+	if tokenExpirationEnv := os.Getenv("TOKEN_EXPIRE_AT"); tokenExpirationEnv != "" {
+		exp, _ := strconv.Atoi(tokenExpirationEnv)
+		*tokenExpiration = exp
+	}
+
+	if envSecretKey := os.Getenv("SECRET_KEY"); envSecretKey != "" {
+		*secretKey = envSecretKey
+	}
+
 	return &Config{
-		Port: *port,
-		DSN:  *dsn,
+		Port:      *port,
+		DSN:       *dsn,
+		SecretKey: *secretKey,
+		Token: Token{
+			Secret: *tokenSecret,
+			Exp:    time.Duration(*tokenExpiration) * time.Hour,
+		},
 	}
 }

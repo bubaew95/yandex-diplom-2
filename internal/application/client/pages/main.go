@@ -147,7 +147,8 @@ func (t *TUI) updateDataTable(data []*pb.DataResponse) {
 		table.SetCell(row, idColumn, tview.NewTableCell(strconv.FormatInt(item.Id, 10)))
 		table.SetCell(row, typeColumn, tview.NewTableCell(t.getDataTypeLabel(model.DataType(item.Type))))
 
-		decodeText, err := crypto.DecodeHash(item.Text)
+		encrypt := crypto.NewEncryptor(t.Config.SecretKey)
+		decodeText, err := encrypt.DecodeHash(item.Text)
 		if err != nil {
 			decodeText = item.Text
 		}

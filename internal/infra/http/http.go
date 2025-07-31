@@ -67,7 +67,7 @@ func (s *httpServer) listenGRPC() *grpc.Server {
 		logger.Log.Fatal("Rpc server error", zap.Error(err))
 	}
 
-	server := grpc.NewServer(grpc.UnaryInterceptor(grpcServer.LoginInterceptor()))
+	server := grpc.NewServer(grpc.UnaryInterceptor(grpcServer.LoginInterceptor(s.config)))
 	pb.RegisterGoKeeperServer(server, grpcServer.NewServer(s.srv))
 
 	logger.Log.Info("Run rpc server. Port: " + s.config.Port)
